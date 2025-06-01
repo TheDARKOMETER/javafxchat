@@ -4,6 +4,7 @@
  */
 package javachat;
 
+import impl.BCrypt;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javafx.scene.shape.Rectangle;
@@ -72,6 +73,7 @@ public class ChatFrame extends JApplet {
                 applet.start();
             }
         });
+
     }
     
     @Override

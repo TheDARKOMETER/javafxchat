@@ -8,7 +8,9 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="JavaChat.jar" size="4487" download="eager" />
+    <jar href="JavaChat.jar" size="5737" download="eager" />
+    <jar href="lib\Bcrypt.jar" size="31076" download="eager" />
+    <jar href="lib\servlet-api-2.5.jar" size="105112" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="javachat.ChatFrame"  name="JavaChat" >
   </applet-desc>
