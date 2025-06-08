@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="JavaChat" default="default" basedir=".">
+<project name="JavaChat" default="compile" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
     <description>Builds, tests, and runs the project JavaChat.</description>
     <import file="nbproject/build-impl.xml"/>
     <property name="src.dir" value="src"/>
@@ -12,7 +12,7 @@
         <mkdir dir="${classes.dir}"/>
     </target>
     
-    <target name="compile" depends="init">
+    <target name="compile" depends="init, retrieve-all">
         <javac srcdir="${src.dir}" encoding="${encoding}" destdir="${classes.dir}" includeantruntime="false">
             <classpath>
                 <fileset dir="${lib.dir}" includes="*.jar"/>
@@ -28,4 +28,39 @@
             </classpath>
         </java>
     </target>
+    
+    <target name="init-ivy">
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                         uri="antlib:org.apache.ivy.ant"
+                         classpath="${lib.dir}/ivy-2.5.3.jar"/>
+    </target>
+
+    <target name="report">
+        <ivy:report graph="false" todir="report"/>
+        <echo>
+            =======================================================================
+            Dependencies retrieved in lib directory
+            Dependency report generated in report directory
+            =======================================================================
+        </echo>
+    </target>
+
+    <target name="retrieve-conf" depends="init-ivy"
+                description="--> Retrieves a set of configuration (get only dependencies needed).">
+        <ivy:info file="ivy.xml"/>
+        <echo>
+            =======================================================================
+            Please enter configuration (or comma separated list of configurations).
+            Available configurations are: ${ivy.configurations}</echo>
+        <input message="Configuration(s):" addproperty="ivy.confs"/>
+        <ivy:retrieve conf="${ivy.confs}"/>
+        <antcall target="report" inheritRefs="true"/>
+    </target>
+
+    <target name="retrieve-all" depends="init-ivy"
+                description="--> Retrieves all Ivy dependencies into the lib directory">
+        <ivy:retrieve/>
+        <antcall target="report" inheritRefs="true"/>
+    </target>
+    
 </project>

@@ -20,7 +20,7 @@
 <ivy-module version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
     <info organisation="org.apache.ivy" module="ivy" revision="2.5.3" status="release" publication="20241223125031">
         <description homepage="http://ant.apache.org/ivy/">
-        Apache Ivy is a tool for managing (recording, tracking, resolving and reporting) project dependencies.
+            Apache Ivy is a tool for managing (recording, tracking, resolving and reporting) project dependencies.
         </description>
     </info>
     <configurations defaultconfmapping="*->default">
@@ -63,10 +63,22 @@
         <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="test" transitive="false"/>
         <dependency org="xmlunit" name="xmlunit" rev="1.6" conf="test" transitive="false"/>
 
+                
+        <!-- JSocket Chat Dependencies -->
+        <dependency org="org.springframework" name="spring-websocket" rev="6.0.13"/>
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
+        <dependency org="org.springframework" name="spring-messaging" rev="6.0.13"/>        
+        <dependency org="org.springframework" name="spring-context" rev="6.0.13"/>
+        
         <!-- Global excludes -->
         <exclude org="junit" module="junit" conf="core,default,httpclient,oro,vfs,sftp,standalone,ant"/>
         <exclude org="org.hamcrest" module="hamcrest-core" conf="core,default,httpclient,oro,vfs,sftp,standalone,ant"/>
+        
+        
+        
         <!-- Exclude the whole outdated commons-httpclient org -->
         <exclude org="commons-httpclient" conf="*"/>
+        
+
     </dependencies>
 </ivy-module>
