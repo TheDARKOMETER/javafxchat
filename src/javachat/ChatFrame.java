@@ -43,6 +43,7 @@ public class ChatFrame extends JApplet {
     
     private static final int JFXPANEL_WIDTH_INT = 900;
     private static final int JFXPANEL_HEIGHT_INT = 750;
+    private static StompClient client = new StompClient("ws://localhost:8080/jsocketapi");
     private static JFXPanel fxContainer;
 
     /**
@@ -148,6 +149,10 @@ public class ChatFrame extends JApplet {
         root.setLeft(userList);
         root.setCenter(chatWindow);
         fxContainer.setScene(new Scene(root));
+    }
+    
+    private void initializeSocket() {
+        client.createClient();
     }
     
 }

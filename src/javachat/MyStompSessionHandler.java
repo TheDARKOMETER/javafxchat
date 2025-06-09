@@ -4,12 +4,12 @@
  */
 package javachat;
 
-import java.lang.reflect.Type;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import java.util.logging.Level;
 import org.springframework.lang.Nullable;
 import java.util.logging.Logger;
 
@@ -24,9 +24,15 @@ public class MyStompSessionHandler implements StompSessionHandler {
     private static Logger logger = Logger.getLogger(MyStompSessionHandler.class.getName());
 
     @Override
-    public void afterConnected(
-            StompSession session, StompHeaders connectedHeaders) {
+    public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
         session.subscribe("/topic/messages", this);
+        /* TODO
+        session.subscribe("/topic/greetings", new StompFrameHandler() {
+            @override
+            public Type getPayLoadType(StompHeaders headers) {
+                Greeting.class;
+            }
+        });*/
         session.send("/app/chat", getSampleMessage());
     }
 
@@ -34,11 +40,14 @@ public class MyStompSessionHandler implements StompSessionHandler {
     public void handleFrame(StompHeaders headers, Object payload) {
         Message msg = (Message) payload;
         logger.info("Received : " + msg.getText() + " from : " + msg.getFrom());
+
     }
 
     @Override
     public void handleException(StompSession session, @Nullable StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
-
+        String sessionId = (session != null  && session.getSessionId() != null) ? session.getSessionId()  : "no-session"; 
+        logger.severe("Exception occured at session: " + sessionId + " | Exception message " + exception.getLocalizedMessage() + " caused by: " + exception.getCause()); 
+        logger.log(Level.SEVERE, "Exception stack trace:", exception);
     }
 
     @Override
@@ -48,7 +57,7 @@ public class MyStompSessionHandler implements StompSessionHandler {
 
     @Override
     public Type getPayloadType(StompHeaders headers) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return Message.class;
     }
 
     private Message getSampleMessage() {

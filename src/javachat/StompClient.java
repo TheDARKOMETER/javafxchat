@@ -14,15 +14,19 @@ import java.util.Scanner;
  *
  * @author User
  */
-public class Stomp {
-    String URL = "localhost:8080/jsocketapi/";
+public class StompClient {
+    private String brokerURL;
+    
+    public StompClient(String brokerURL) { 
+        this.brokerURL = brokerURL;
+    }
     
     public void createClient() {
         WebSocketClient client = new StandardWebSocketClient();
         WebSocketStompClient stompClient = new WebSocketStompClient(client);
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         StompSessionHandler sessionHandler = new MyStompSessionHandler();
-        stompClient.connect(URL, sessionHandler);
+        stompClient.connect(brokerURL, sessionHandler);
 
         new Scanner(System.in).nextLine(); // Don't close immediately.
     }

@@ -65,10 +65,10 @@
 
                 
         <!-- JSocket Chat Dependencies -->
-        <dependency org="org.springframework" name="spring-websocket" rev="6.0.13"/>
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
-        <dependency org="org.springframework" name="spring-messaging" rev="6.0.13"/>        
-        <dependency org="org.springframework" name="spring-context" rev="6.0.13"/>
+        <dependency org="org.springframework" name="spring-websocket" rev="5.3.39"/>
+        <dependency org="org.springframework" name="spring-messaging" rev="5.3.39"/>        
+        <dependency org="org.springframework" name="spring-context" rev="5.3.39"/>
         
         <!-- Global excludes -->
         <exclude org="junit" module="junit" conf="core,default,httpclient,oro,vfs,sftp,standalone,ant"/>
