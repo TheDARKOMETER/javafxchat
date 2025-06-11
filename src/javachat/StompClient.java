@@ -27,7 +27,7 @@ public class StompClient {
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         StompSessionHandler sessionHandler = new MyStompSessionHandler();
         stompClient.connect(brokerURL, sessionHandler);
-
-        new Scanner(System.in).nextLine(); // Don't close immediately.
+        System.out.println("connected to " + brokerURL);
+        //new Scanner(System.in).nextLine(); // Don't close immediately.
     }
 }

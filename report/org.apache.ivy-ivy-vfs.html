@@ -18,7 +18,7 @@
 </h1>
 <div id="date">
         resolved on
-        2025-06-09 23:39:44</div>
+        2025-06-11 22:53:04</div>
 <ul id="confmenu">
 <li>
 <a href="org.apache.ivy-ivy-core.html">core</a>
@@ -55,25 +55,40 @@
 <h2>Dependencies Stats</h2>
 <table class="header">
 <tr>
-<td class="title">Modules</td><td class="value">11</td>
+<td class="title">Modules</td><td class="value">15</td>
 </tr>
 <tr>
-<td class="title">Revisions</td><td class="value">11
+<td class="title">Revisions</td><td class="value">16
         (0 searched <img src="https://ant.apache.org/ivy/images/searched.gif" alt="searched" title="module revisions which required a search with a dependency resolver to be resolved">,
         0 downloaded <img src="https://ant.apache.org/ivy/images/downloaded.gif" alt="downloaded" title="module revisions for which ivy file was downloaded by dependency resolver">,
-        0 evicted <img src="https://ant.apache.org/ivy/images/evicted.gif" alt="evicted" title="module revisions which were evicted by others">,
+        1 evicted <img src="https://ant.apache.org/ivy/images/evicted.gif" alt="evicted" title="module revisions which were evicted by others">,
         0 errors <img src="https://ant.apache.org/ivy/images/error.gif" alt="error" title="module revisions on which error occurred">)</td>
 </tr>
 <tr>
-<td class="title">Artifacts</td><td class="value">11
+<td class="title">Artifacts</td><td class="value">15
         (0 downloaded,
         0 failed)</td>
 </tr>
 <tr>
-<td class="title">Artifacts size</td><td class="value">7186 kB
+<td class="title">Artifacts size</td><td class="value">11158 kB
         (0 kB downloaded,
-        7186 kB in cache)</td>
+        11158 kB in cache)</td>
 </tr>
+</table>
+<h2>Conflicts</h2>
+<table class="conflicts">
+<thead>
+<tr>
+<th>Module</th><th>Selected</th><th>Evicted</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#commons-logging-commons-logging">commons-logging
+            by
+            commons-logging</a></td><td><a href="#commons-logging-commons-logging-1.3.5">1.3.5</a> </td><td><a href="#commons-logging-commons-logging-1.2">1.2 </a> </td>
+</tr>
+</tbody>
 </table>
 <h2>Dependencies Overview</h2>
 <table class="deps">
@@ -92,7 +107,55 @@
 <tr>
 <td><a href="#commons-logging-commons-logging">--- commons-logging
         by
-        commons-logging</a></td><td><a href="#commons-logging-commons-logging-1.2">1.2</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td><td align="center">60 kB
+        commons-logging</a></td><td><a href="#commons-logging-commons-logging-1.3.5">1.3.5</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache-2.0</a></span></td><td align="center">72 kB
+    </td><td align="center"></td>
+</tr>
+<tr>
+<td><a href="#commons-logging-commons-logging">--- commons-logging
+        by
+        commons-logging</a></td><td><a href="#commons-logging-commons-logging-1.2">1.2</a></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">0 kB
+    </td><td align="center"><img src="https://ant.apache.org/ivy/images/evicted.gif" alt="evicted" title="evicted by 1.3.5"></td>
+</tr>
+<tr>
+<td><a href="#com.fasterxml.jackson.core-jackson-databind"> jackson-databind
+        by
+        com.fasterxml.jackson.core</a></td><td><a href="#com.fasterxml.jackson.core-jackson-databind-2.13.5">2.13.5</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td><td align="center">1502 kB
+    </td><td align="center"></td>
+</tr>
+<tr>
+<td><a href="#com.fasterxml.jackson.core-jackson-annotations">--- jackson-annotations
+        by
+        com.fasterxml.jackson.core</a></td><td><a href="#com.fasterxml.jackson.core-jackson-annotations-2.13.5">2.13.5</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td><td align="center">74 kB
+    </td><td align="center"></td>
+</tr>
+<tr>
+<td><a href="#com.fasterxml.jackson.core-jackson-core">--- jackson-core
+        by
+        com.fasterxml.jackson.core</a></td><td><a href="#com.fasterxml.jackson.core-jackson-core-2.13.5">2.13.5</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td><td align="center">366 kB
+    </td><td align="center"></td>
+</tr>
+<tr>
+<td><a href="#com.fasterxml.jackson.core-jackson-annotations"> jackson-annotations
+        by
+        com.fasterxml.jackson.core</a></td><td><a href="#com.fasterxml.jackson.core-jackson-annotations-2.13.5">2.13.5</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td><td align="center">74 kB
+    </td><td align="center"></td>
+</tr>
+<tr>
+<td><a href="#com.fasterxml.jackson.core-jackson-core"> jackson-core
+        by
+        com.fasterxml.jackson.core</a></td><td><a href="#com.fasterxml.jackson.core-jackson-core-2.13.5">2.13.5</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td><td align="center">366 kB
+    </td><td align="center"></td>
+</tr>
+<tr>
+<td><a href="#org.glassfish.tyrus.bundles-tyrus-standalone-client"> tyrus-standalone-client
+        by
+        org.glassfish.tyrus.bundles</a></td><td><a href="#org.glassfish.tyrus.bundles-tyrus-standalone-client-1.17">1.17</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="https://projects.eclipse.org/license/epl-2.0">Eclipse Public License 2.0</a></span><span style="padding-right:3px;"><a href="https://projects.eclipse.org/license/secondary-gpl-2.0-cp">GNU General Public License, version 2 with the GNU Classpath Exception</a></span></td><td align="center">2019 kB
+    </td><td align="center"></td>
+</tr>
+<tr>
+<td><a href="#commons-logging-commons-logging"> commons-logging
+        by
+        commons-logging</a></td><td><a href="#commons-logging-commons-logging-1.3.5">1.3.5</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache-2.0</a></span></td><td align="center">72 kB
     </td><td align="center"></td>
 </tr>
 <tr>
@@ -393,8 +456,14 @@
 <tr>
 <td><a href="#commons-logging-commons-logging"> commons-logging
         by
-        commons-logging</a></td><td><a href="#commons-logging-commons-logging-1.2">1.2</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td><td align="center">60 kB
+        commons-logging</a></td><td><a href="#commons-logging-commons-logging-1.3.5">1.3.5</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache-2.0</a></span></td><td align="center">72 kB
     </td><td align="center"></td>
+</tr>
+<tr>
+<td><a href="#commons-logging-commons-logging"> commons-logging
+        by
+        commons-logging</a></td><td><a href="#commons-logging-commons-logging-1.2">1.2</a></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">0 kB
+    </td><td align="center"><img src="https://ant.apache.org/ivy/images/evicted.gif" alt="evicted" title="evicted by 1.3.5"></td>
 </tr>
 </tbody>
 </table>
@@ -412,31 +481,31 @@
 </tbody>
 </table>
 <h3>
-<a name="commons-logging-commons-logging"></a>commons-logging by commons-logging</h3>
+<a name="com.fasterxml.jackson.core-jackson-databind"></a>jackson-databind by com.fasterxml.jackson.core</h3>
 <h4>
-<a name="commons-logging-commons-logging-1.2"></a>
-           Revision: 1.2<span style="padding-left:15px;"></span>
+<a name="com.fasterxml.jackson.core-jackson-databind-2.13.5"></a>
+           Revision: 2.13.5<span style="padding-left:15px;"></span>
 </h4>
 <table class="header">
 <tr>
-<td class="title">Home Page</td><td class="value"><a href="http://commons.apache.org/proper/commons-logging/">http://commons.apache.org/proper/commons-logging/</a></td>
+<td class="title">Home Page</td><td class="value"><a href="http://github.com/FasterXML/jackson">http://github.com/FasterXML/jackson</a></td>
 </tr>
 <tr>
 <td class="title">Status</td><td class="value">release</td>
 </tr>
 <tr>
-<td class="title">Publication</td><td class="value">20140706021228</td>
+<td class="title">Publication</td><td class="value">20230123084817</td>
 </tr>
 <tr>
 <td class="title">Resolver</td><td class="value">public</td>
 </tr>
 <tr>
-<td class="title">Configurations</td><td class="value">master(*), compile, runtime(*), runtime, compile(*), master</td>
+<td class="title">Configurations</td><td class="value">default, compile, runtime, master</td>
 </tr>
 <tr>
-<td class="title">Artifacts size</td><td class="value">60 kB
+<td class="title">Artifacts size</td><td class="value">1502 kB
           (0 kB downloaded,
-          60 kB in cache)</td>
+          1502 kB in cache)</td>
 </tr>
 <tr>
 <td class="title">Licenses</td><td class="value"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td>
@@ -450,6 +519,289 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>org.apache.ivy</td><td><a href="#org.apache.ivy-ivy">ivy</a></td><td>2.5.3</td><td>core, vfs</td><td>2.13.5</td>
+</tr>
+</tbody>
+</table>
+<h5>Dependencies</h5>
+<table class="deps">
+<thead>
+<tr>
+<th>Module</th><th>Revision</th><th>Status</th><th>Resolver</th><th>Default</th><th>Licenses</th><th>Size</th><th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#com.fasterxml.jackson.core-jackson-annotations"> jackson-annotations
+        by
+        com.fasterxml.jackson.core</a></td><td><a href="#com.fasterxml.jackson.core-jackson-annotations-2.13.5">2.13.5</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td><td align="center">74 kB
+    </td><td align="center"></td>
+</tr>
+<tr>
+<td><a href="#com.fasterxml.jackson.core-jackson-core"> jackson-core
+        by
+        com.fasterxml.jackson.core</a></td><td><a href="#com.fasterxml.jackson.core-jackson-core-2.13.5">2.13.5</a></td><td align="center">release</td><td align="center">public</td><td align="center">false</td><td align="center"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td><td align="center">366 kB
+    </td><td align="center"></td>
+</tr>
+</tbody>
+</table>
+<h5>Artifacts</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th><th>Type</th><th>Ext</th><th>Download</th><th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jackson-databind</td><td>bundle</td><td>jar</td><td align="center">no</td><td align="center">1502 kB</td>
+</tr>
+</tbody>
+</table>
+<h3>
+<a name="com.fasterxml.jackson.core-jackson-annotations"></a>jackson-annotations by com.fasterxml.jackson.core</h3>
+<h4>
+<a name="com.fasterxml.jackson.core-jackson-annotations-2.13.5"></a>
+           Revision: 2.13.5<span style="padding-left:15px;"></span>
+</h4>
+<table class="header">
+<tr>
+<td class="title">Home Page</td><td class="value"><a href="http://github.com/FasterXML/jackson">http://github.com/FasterXML/jackson</a></td>
+</tr>
+<tr>
+<td class="title">Status</td><td class="value">release</td>
+</tr>
+<tr>
+<td class="title">Publication</td><td class="value">20230123080414</td>
+</tr>
+<tr>
+<td class="title">Resolver</td><td class="value">public</td>
+</tr>
+<tr>
+<td class="title">Configurations</td><td class="value">default, master(*), compile, runtime(*), runtime, compile(*), master</td>
+</tr>
+<tr>
+<td class="title">Artifacts size</td><td class="value">74 kB
+          (0 kB downloaded,
+          74 kB in cache)</td>
+</tr>
+<tr>
+<td class="title">Licenses</td><td class="value"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td>
+</tr>
+</table>
+<h5>Required by</h5>
+<table>
+<thead>
+<tr>
+<th>Organisation</th><th>Name</th><th>Revision</th><th>In Configurations</th><th>Asked Revision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>org.apache.ivy</td><td><a href="#org.apache.ivy-ivy">ivy</a></td><td>2.5.3</td><td>core, vfs</td><td>2.13.5</td>
+</tr>
+<tr>
+<td>com.fasterxml.jackson.core</td><td><a href="#com.fasterxml.jackson.core-jackson-databind">jackson-databind</a></td><td>2.13.5</td><td>default, compile, runtime, master</td><td>2.13.5</td>
+</tr>
+</tbody>
+</table>
+<h5>Dependencies</h5>
+<table>
+<tr>
+<td>
+    No dependency
+    </td>
+</tr>
+</table>
+<h5>Artifacts</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th><th>Type</th><th>Ext</th><th>Download</th><th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jackson-annotations</td><td>bundle</td><td>jar</td><td align="center">no</td><td align="center">74 kB</td>
+</tr>
+</tbody>
+</table>
+<h3>
+<a name="com.fasterxml.jackson.core-jackson-core"></a>jackson-core by com.fasterxml.jackson.core</h3>
+<h4>
+<a name="com.fasterxml.jackson.core-jackson-core-2.13.5"></a>
+           Revision: 2.13.5<span style="padding-left:15px;"></span>
+</h4>
+<table class="header">
+<tr>
+<td class="title">Home Page</td><td class="value"><a href="https://github.com/FasterXML/jackson-core">https://github.com/FasterXML/jackson-core</a></td>
+</tr>
+<tr>
+<td class="title">Status</td><td class="value">release</td>
+</tr>
+<tr>
+<td class="title">Publication</td><td class="value">20230123082437</td>
+</tr>
+<tr>
+<td class="title">Resolver</td><td class="value">public</td>
+</tr>
+<tr>
+<td class="title">Configurations</td><td class="value">default, master(*), compile, runtime(*), runtime, compile(*), master</td>
+</tr>
+<tr>
+<td class="title">Artifacts size</td><td class="value">366 kB
+          (0 kB downloaded,
+          366 kB in cache)</td>
+</tr>
+<tr>
+<td class="title">Licenses</td><td class="value"><span style="padding-right:3px;"><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></span></td>
+</tr>
+</table>
+<h5>Required by</h5>
+<table>
+<thead>
+<tr>
+<th>Organisation</th><th>Name</th><th>Revision</th><th>In Configurations</th><th>Asked Revision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>org.apache.ivy</td><td><a href="#org.apache.ivy-ivy">ivy</a></td><td>2.5.3</td><td>core, vfs</td><td>2.13.5</td>
+</tr>
+<tr>
+<td>com.fasterxml.jackson.core</td><td><a href="#com.fasterxml.jackson.core-jackson-databind">jackson-databind</a></td><td>2.13.5</td><td>default, compile, runtime, master</td><td>2.13.5</td>
+</tr>
+</tbody>
+</table>
+<h5>Dependencies</h5>
+<table>
+<tr>
+<td>
+    No dependency
+    </td>
+</tr>
+</table>
+<h5>Artifacts</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th><th>Type</th><th>Ext</th><th>Download</th><th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jackson-core</td><td>bundle</td><td>jar</td><td align="center">no</td><td align="center">366 kB</td>
+</tr>
+</tbody>
+</table>
+<h3>
+<a name="org.glassfish.tyrus.bundles-tyrus-standalone-client"></a>tyrus-standalone-client by org.glassfish.tyrus.bundles</h3>
+<h4>
+<a name="org.glassfish.tyrus.bundles-tyrus-standalone-client-1.17"></a>
+           Revision: 1.17<span style="padding-left:15px;"></span>
+</h4>
+<table class="header">
+<tr>
+<td class="title">Home Page</td><td class="value"><a href=""></a></td>
+</tr>
+<tr>
+<td class="title">Status</td><td class="value">release</td>
+</tr>
+<tr>
+<td class="title">Publication</td><td class="value">20200509021243</td>
+</tr>
+<tr>
+<td class="title">Resolver</td><td class="value">public</td>
+</tr>
+<tr>
+<td class="title">Configurations</td><td class="value">default, compile, runtime, master</td>
+</tr>
+<tr>
+<td class="title">Artifacts size</td><td class="value">2019 kB
+          (0 kB downloaded,
+          2019 kB in cache)</td>
+</tr>
+<tr>
+<td class="title">Licenses</td><td class="value"><span style="padding-right:3px;"><a href="https://projects.eclipse.org/license/epl-2.0">Eclipse Public License 2.0</a></span><span style="padding-right:3px;"><a href="https://projects.eclipse.org/license/secondary-gpl-2.0-cp">GNU General Public License, version 2 with the GNU Classpath Exception</a></span></td>
+</tr>
+</table>
+<h5>Required by</h5>
+<table>
+<thead>
+<tr>
+<th>Organisation</th><th>Name</th><th>Revision</th><th>In Configurations</th><th>Asked Revision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>org.apache.ivy</td><td><a href="#org.apache.ivy-ivy">ivy</a></td><td>2.5.3</td><td>core, vfs</td><td>1.17</td>
+</tr>
+</tbody>
+</table>
+<h5>Dependencies</h5>
+<table>
+<tr>
+<td>
+    No dependency
+    </td>
+</tr>
+</table>
+<h5>Artifacts</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th><th>Type</th><th>Ext</th><th>Download</th><th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tyrus-standalone-client</td><td>jar</td><td>jar</td><td align="center">no</td><td align="center">2019 kB</td>
+</tr>
+</tbody>
+</table>
+<h3>
+<a name="commons-logging-commons-logging"></a>commons-logging by commons-logging</h3>
+<h4>
+<a name="commons-logging-commons-logging-1.3.5"></a>
+           Revision: 1.3.5<span style="padding-left:15px;"></span>
+</h4>
+<table class="header">
+<tr>
+<td class="title">Home Page</td><td class="value"><a href="https://commons.apache.org/proper/commons-logging/">https://commons.apache.org/proper/commons-logging/</a></td>
+</tr>
+<tr>
+<td class="title">Status</td><td class="value">release</td>
+</tr>
+<tr>
+<td class="title">Publication</td><td class="value">20250131232712</td>
+</tr>
+<tr>
+<td class="title">Resolver</td><td class="value">public</td>
+</tr>
+<tr>
+<td class="title">Configurations</td><td class="value">default, compile, runtime, master, master(*), runtime(*), compile(*)</td>
+</tr>
+<tr>
+<td class="title">Artifacts size</td><td class="value">72 kB
+          (0 kB downloaded,
+          72 kB in cache)</td>
+</tr>
+<tr>
+<td class="title">Licenses</td><td class="value"><span style="padding-right:3px;"><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache-2.0</a></span></td>
+</tr>
+</table>
+<h5>Required by</h5>
+<table>
+<thead>
+<tr>
+<th>Organisation</th><th>Name</th><th>Revision</th><th>In Configurations</th><th>Asked Revision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>org.apache.ivy</td><td><a href="#org.apache.ivy-ivy">ivy</a></td><td>2.5.3</td><td>core, vfs</td><td>1.3.5</td>
+</tr>
 <tr>
 <td>org.apache.commons</td><td><a href="#org.apache.commons-commons-vfs2">commons-vfs2</a></td><td>2.2</td><td>default, compile, runtime, master</td><td>1.2</td>
 </tr>
@@ -472,7 +824,48 @@
 </thead>
 <tbody>
 <tr>
-<td>commons-logging</td><td>jar</td><td>jar</td><td align="center">no</td><td align="center">60 kB</td>
+<td>commons-logging</td><td>jar</td><td>jar</td><td align="center">no</td><td align="center">72 kB</td>
+</tr>
+</tbody>
+</table>
+<h4>
+<a name="commons-logging-commons-logging-1.2"></a>
+           Revision: 1.2<span style="padding-left:15px;"><img src="https://ant.apache.org/ivy/images/evicted.gif" alt="evicted" title="evicted by 1.3.5"></span>
+</h4>
+<table class="header">
+<tr>
+<td class="title">Status</td><td class="value"></td>
+</tr>
+<tr>
+<td class="title">Publication</td><td class="value"></td>
+</tr>
+<tr>
+<td class="title">Resolver</td><td class="value"></td>
+</tr>
+<tr>
+<td class="title">Configurations</td><td class="value">master(*), compile, runtime(*), runtime, compile(*), master</td>
+</tr>
+<tr>
+<td class="title">Artifacts size</td><td class="value">0 kB
+          (0 kB downloaded,
+          0 kB in cache)</td>
+</tr>
+<tr>
+<td class="title">Evicted by</td><td class="value"><b>1.3.5 </b> <b></b>
+          in <b>latest-revision</b> conflict manager
+          </td>
+</tr>
+</table>
+<h5>Required by</h5>
+<table>
+<thead>
+<tr>
+<th>Organisation</th><th>Name</th><th>Revision</th><th>In Configurations</th><th>Asked Revision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>org.apache.commons</td><td><a href="#org.apache.commons-commons-vfs2">commons-vfs2</a></td><td>2.2</td><td>default, compile, runtime, master</td><td>1.2</td>
 </tr>
 </tbody>
 </table>

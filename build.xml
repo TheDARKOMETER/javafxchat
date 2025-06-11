@@ -35,7 +35,7 @@
                          classpath="${lib.dir}/ivy-2.5.3.jar"/>
     </target>
 
-    <target name="report">
+    <target name="report"> 
         <ivy:report graph="false" todir="report"/>
         <echo>
             =======================================================================

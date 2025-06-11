@@ -12,7 +12,7 @@ import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import java.util.logging.Level;
 import org.springframework.lang.Nullable;
 import java.util.logging.Logger;
-
+import javachat.shared.Greeting;
 import java.lang.reflect.Type;
 
 /**
@@ -26,13 +26,19 @@ public class MyStompSessionHandler implements StompSessionHandler {
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
         session.subscribe("/topic/messages", this);
-        /* TODO
         session.subscribe("/topic/greetings", new StompFrameHandler() {
-            @override
-            public Type getPayLoadType(StompHeaders headers) {
-                Greeting.class;
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return Greeting.class;
             }
-        });*/
+            
+            @Override 
+            public void handleFrame(StompHeaders headers, Object payload) {
+                Greeting greeting = (Greeting) payload;
+                System.out.println("Received: " + greeting.getContent());
+            }
+        });
+        logger.info("Subscribed to /topic/greetings, sending" + getSampleMessage());
         session.send("/app/chat", getSampleMessage());
     }
 
@@ -52,7 +58,7 @@ public class MyStompSessionHandler implements StompSessionHandler {
 
     @Override
     public void handleTransportError(StompSession session, Throwable exception) {
-        logger.severe("Transport error in STOMP Session " + exception.getMessage());
+        logger.severe("Transport error in STOMP Session " + exception);
     }
 
     @Override

@@ -43,7 +43,7 @@ public class ChatFrame extends JApplet {
     
     private static final int JFXPANEL_WIDTH_INT = 900;
     private static final int JFXPANEL_HEIGHT_INT = 750;
-    private static StompClient client = new StompClient("ws://localhost:8080/jsocketapi");
+    private static StompClient client = new StompClient("ws://localhost:8080/jsocketapi/javafxchat");
     private static JFXPanel fxContainer;
 
     /**
@@ -72,9 +72,9 @@ public class ChatFrame extends JApplet {
                 frame.setVisible(true);
                 
                 applet.start();
+                System.out.println("Application Started, intiializing connection for client");
             }
         });
-
     }
     
     @Override
@@ -88,6 +88,7 @@ public class ChatFrame extends JApplet {
             @Override
             public void run() {
                 createScene();
+                new Thread(() -> initializeSocket()).start();
             }
         });
     }
@@ -152,6 +153,7 @@ public class ChatFrame extends JApplet {
     }
     
     private void initializeSocket() {
+        System.out.println("Creating client");
         client.createClient();
     }
     
