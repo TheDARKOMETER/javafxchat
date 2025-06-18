@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import java.util.logging.Level;
 import org.springframework.lang.Nullable;
+import javachat.shared.HelloMessage;
 import java.util.logging.Logger;
 import javachat.shared.Greeting;
 import java.lang.reflect.Type;
@@ -39,7 +40,7 @@ public class MyStompSessionHandler implements StompSessionHandler {
             }
         });
         logger.info("Subscribed to /topic/greetings, sending" + getSampleMessage());
-        session.send("/app/chat", getSampleMessage());
+        session.send("/app/chat", sendHelloMessage());
     }
 
     @Override
@@ -73,4 +74,10 @@ public class MyStompSessionHandler implements StompSessionHandler {
         return msg;
     }
 
+    private HelloMessage sendHelloMessage() {
+        HelloMessage hmsg = new HelloMessage();
+        hmsg.setName("vonchez");
+        return hmsg;
+    }
+    
 }

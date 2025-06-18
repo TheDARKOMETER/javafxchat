@@ -86,7 +86,7 @@
         
         <!-- Exclude the whole outdated commons-httpclient org -->
         <exclude org="commons-httpclient" conf="*"/>
-        
+       
 
     </dependencies>
 </ivy-module>
