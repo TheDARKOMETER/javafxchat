@@ -2,11 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXSwingMain.java to edit this template
  */
-package javachat;
+package javachat.views;
 
 import impl.BCrypt;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.List;
+import javachat.StompClient;
 import javafx.scene.shape.Rectangle;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -34,7 +36,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-
+import javachat.controller.DataController;
+import javachat.dao.TempChatMessageDAO;
+import javachat.models.ChatMessage;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 /**
  *
  * @author thebe
@@ -43,6 +49,10 @@ public class ChatFrame extends JApplet {
     
     private static final int JFXPANEL_WIDTH_INT = 900;
     private static final int JFXPANEL_HEIGHT_INT = 750;
+    private static ArrayList<ChatMessageComponent> allChatMessages;
+    private TempChatMessageDAO tcmd = new TempChatMessageDAO();
+    private DataController dataController = new DataController(tcmd);
+    private static Logger dataLogger = Logger.getLogger(ChatFrame.class.getName());
     private static StompClient client = new StompClient("ws://localhost:8080/jsocketapi/javafxchat");
     private static JFXPanel fxContainer;
 
@@ -50,6 +60,9 @@ public class ChatFrame extends JApplet {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+
+        
         SwingUtilities.invokeLater(new Runnable() {
             
             @Override
@@ -139,16 +152,21 @@ public class ChatFrame extends JApplet {
         userList.getChildren().add(ulLabel);
         userList.setStyle("-fx-background-color:white;");
         
-        VBox chatWindow = new VBox();
-        ScrollPane chatScrollPane = new ScrollPane();
-        chatScrollPane.setPrefSize(15, 150);
-        Rectangle testItem = new Rectangle(200,200,Color.RED);
-        chatScrollPane.setContent(testItem);
-        chatWindow.getChildren().add(chatScrollPane);
+        allChatMessages = dataController.getChatMessagesToRender();
+        dataLogger.info("First chat message content is: " + allChatMessages.get(0).getMessage());
         
+        ScrollPane chatScrollPane = new ScrollPane();
+        VBox chatStack = new VBox();
+        
+       
+        chatStack.getChildren().addAll(allChatMessages);
+        chatScrollPane.setContent(chatStack);
+       
+        
+        // Set BorderPane Elements (Top, Left, Center, Right, Bottom)
         root.setTop(headerBox);
         root.setLeft(userList);
-        root.setCenter(chatWindow);
+        root.setCenter(chatScrollPane);
         fxContainer.setScene(new Scene(root));
     }
     
@@ -156,5 +174,6 @@ public class ChatFrame extends JApplet {
         System.out.println("Creating client");
         client.createClient();
     }
+    
     
 }
