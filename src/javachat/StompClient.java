@@ -9,7 +9,10 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
+import org.springframework.messaging.simp.stomp.StompSession;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
+import org.springframework.util.concurrent.ListenableFuture;
 /**
  *
  * @author User
@@ -21,13 +24,14 @@ public class StompClient {
         this.brokerURL = brokerURL;
     }
     
-    public void createClient() {
+    public StompSession createClient() throws InterruptedException, ExecutionException {
         WebSocketClient client = new StandardWebSocketClient();
         WebSocketStompClient stompClient = new WebSocketStompClient(client);
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         StompSessionHandler sessionHandler = new MyStompSessionHandler();
-        stompClient.connect(brokerURL, sessionHandler);
+        ListenableFuture<StompSession> session = stompClient.connect(brokerURL, sessionHandler);
         System.out.println("connected to " + brokerURL);
+        return session.get() ;
         //new Scanner(System.in).nextLine(); // Don't close immediately.
     }
 }

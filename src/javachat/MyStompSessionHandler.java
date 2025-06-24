@@ -4,6 +4,7 @@
  */
 package javachat;
 
+import javachat.shared.Message;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -15,6 +16,8 @@ import javachat.shared.HelloMessage;
 import java.util.logging.Logger;
 import javachat.shared.Greeting;
 import java.lang.reflect.Type;
+import javachat.models.ChatMessage;
+import javachat.models.User;
 
 /**
  *
@@ -26,7 +29,10 @@ public class MyStompSessionHandler implements StompSessionHandler {
 
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
+        /* Subscribing to /topic/messages will trigger an event to STOMP server to ensure that connection works and that STOMP server can
+         receive and format data from client */
         session.subscribe("/topic/messages", this);
+        /* Subscribing to /topic/greetings will trigger an event to STOMP server to send you a greeting */
         session.subscribe("/topic/greetings", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
@@ -40,7 +46,7 @@ public class MyStompSessionHandler implements StompSessionHandler {
             }
         });
         logger.info("Subscribed to /topic/greetings, sending" + getSampleMessage());
-        session.send("/app/chat", sendHelloMessage());
+        session.send("/app/chat", getHelloMessage());
     }
 
     @Override
@@ -74,7 +80,7 @@ public class MyStompSessionHandler implements StompSessionHandler {
         return msg;
     }
 
-    private HelloMessage sendHelloMessage() {
+    private HelloMessage getHelloMessage() {
         HelloMessage hmsg = new HelloMessage();
         hmsg.setName("vonchez");
         return hmsg;

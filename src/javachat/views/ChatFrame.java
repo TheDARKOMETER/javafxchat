@@ -7,6 +7,7 @@ package javachat.views;
 import impl.BCrypt;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import javafx.scene.control.TextField;
 import java.util.List;
 import javachat.StompClient;
 import javafx.scene.shape.Rectangle;
@@ -41,6 +42,7 @@ import javachat.dao.TempChatMessageDAO;
 import javachat.models.ChatMessage;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import org.springframework.messaging.simp.stomp.StompSession;
 /**
  *
  * @author thebe
@@ -53,6 +55,7 @@ public class ChatFrame extends JApplet {
     private TempChatMessageDAO tcmd = new TempChatMessageDAO();
     private DataController dataController = new DataController(tcmd);
     private static Logger dataLogger = Logger.getLogger(ChatFrame.class.getName());
+    private StompSession stompSession;
     private static StompClient client = new StompClient("ws://localhost:8080/jsocketapi/javafxchat");
     private static JFXPanel fxContainer;
 
@@ -101,7 +104,9 @@ public class ChatFrame extends JApplet {
             @Override
             public void run() {
                 createScene();
-                new Thread(() -> initializeSocket()).start();
+                new Thread(() -> {
+                    setStompSession(initializeSession());
+                }).start();
             }
         });
     }
@@ -152,28 +157,45 @@ public class ChatFrame extends JApplet {
         userList.getChildren().add(ulLabel);
         userList.setStyle("-fx-background-color:white;");
         
+     
+        // Chat Messages
         allChatMessages = dataController.getChatMessagesToRender();
         dataLogger.info("First chat message content is: " + allChatMessages.get(0).getMessage());
-        
         ScrollPane chatScrollPane = new ScrollPane();
+        chatScrollPane.setFitToWidth(true);
         VBox chatStack = new VBox();
-        
-       
         chatStack.getChildren().addAll(allChatMessages);
         chatScrollPane.setContent(chatStack);
        
+        // User Controls
+        HBox userControls = new HBox();
+        TextField chatInputTxt = new TextField();
+        HBox.setHgrow(chatInputTxt, Priority.ALWAYS);
+        Button sendBtn = new Button("Send");
+        userControls.getChildren().addAll(chatInputTxt, sendBtn);
+        
         
         // Set BorderPane Elements (Top, Left, Center, Right, Bottom)
         root.setTop(headerBox);
         root.setLeft(userList);
         root.setCenter(chatScrollPane);
+        root.setBottom(userControls);
         fxContainer.setScene(new Scene(root));
     }
     
-    private void initializeSocket() {
+    private StompSession initializeSession() {
+        StompSession session = null;
         System.out.println("Creating client");
-        client.createClient();
+        try {
+            session = client.createClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+        return session;
     }
     
+    private void setStompSession(StompSession ss) {
+        this.stompSession = ss;
+    }
     
 }

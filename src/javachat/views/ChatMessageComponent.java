@@ -22,12 +22,15 @@ public class ChatMessageComponent extends HBox {
     public ChatMessageComponent(ChatMessage data) {
         this.data = data;
         // Components
-        Label username = new Label(data.getAuthor().getUsername());
+        Label username = new Label(data.getAuthor().getUsername() + ":");
+        username.setStyle("-fx-font-weight:bold;");
         Label messageContent = new Label(data.getContent());
         
-        // Styling
+        // CMC Styling
         this.setPadding(new Insets(15, 25, 15, 25));
         this.setSpacing(10);
+        this.setPrefHeight(this.computeMinWidth(USE_PREF_SIZE));
+        this.setStyle("-fx-background-color:#F6F6F6;-fx-border-color:black;-fx-border-width:1;-fx-border-style:solid;");
         this.getChildren().addAll(username, messageContent);
     }
 
