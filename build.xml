@@ -7,7 +7,6 @@
     <property name="build.dir" value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="lib.dir" value="lib"/>
-    
     <target name="init">
         <mkdir dir="${classes.dir}"/>
     </target>
@@ -16,12 +15,13 @@
         <javac srcdir="${src.dir}" encoding="${encoding}" destdir="${classes.dir}" includeantruntime="false">
             <classpath>
                 <fileset dir="${lib.dir}" includes="*.jar"/>
+                <fileset dir="${javafx.lib}" includes="*.jar"/>
             </classpath>
         </javac>
     </target>
     
     <target name="run" depends="compile">
-        <java className="javachat.ChatFrame" fork="true">
+        <java className="javachat.views.ChatFrame" fork="true">
             <classpath>
                 <pathelement path="${classes.dir}"/>
                 <fileset dir="${lib.dir}" includes="*.jar"/>
@@ -31,8 +31,8 @@
     
     <target name="init-ivy">
         <taskdef resource="org/apache/ivy/ant/antlib.xml"
-                         uri="antlib:org.apache.ivy.ant"
-                         classpath="${lib.dir}/ivy-2.5.3.jar"/>
+                 uri="antlib:org.apache.ivy.ant"
+                 classpath="${lib.dir}/ivy-2.5.3.jar"/>
     </target>
 
     <target name="report"> 
@@ -46,7 +46,7 @@
     </target>
 
     <target name="retrieve-conf" depends="init-ivy"
-                description="--> Retrieves a set of configuration (get only dependencies needed).">
+            description="--> Retrieves a set of configuration (get only dependencies needed).">
         <ivy:info file="ivy.xml"/>
         <echo>
             =======================================================================
@@ -57,10 +57,13 @@
         <antcall target="report" inheritRefs="true"/>
     </target>
 
+
     <target name="retrieve-all" depends="init-ivy"
-                description="--> Retrieves all Ivy dependencies into the lib directory">
+            description="--> Retrieves all Ivy dependencies into the lib directory">
         <ivy:retrieve/>
         <antcall target="report" inheritRefs="true"/>
     </target>
+    
+              
     
 </project>

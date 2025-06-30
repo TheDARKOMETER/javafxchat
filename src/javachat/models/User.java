@@ -10,6 +10,18 @@ package javachat.models;
  */
 public class User {
 
+    private String username;
+    private long createdAt;
+    private String email;
+
+    public User() {}
+    
+    public User(String username, long createdAt, String email) {
+        this.username = username;
+        this.createdAt = createdAt;
+        this.email = email;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -34,14 +46,4 @@ public class User {
         this.email = email;
     }
 
-    
-    private String username;
-    private long createdAt; 
-    private String email;
-
-    public User(String username, long createdAt, String email) {
-        this.username = username;
-        this.createdAt = createdAt;
-        this.email = email;
-    }
 }

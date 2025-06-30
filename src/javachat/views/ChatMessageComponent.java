@@ -7,6 +7,12 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javachat.models.ChatMessage;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 
 
 /**
@@ -30,7 +36,7 @@ public class ChatMessageComponent extends HBox {
         this.setPadding(new Insets(15, 25, 15, 25));
         this.setSpacing(10);
         this.setPrefHeight(this.computeMinWidth(USE_PREF_SIZE));
-        this.setStyle("-fx-background-color:#F6F6F6;-fx-border-color:black;-fx-border-width:1;-fx-border-style:solid;");
+        this.setBorder(new Border(new BorderStroke(Color.LIGHTGREY, BorderStrokeStyle.SOLID, new CornerRadii(1), new BorderWidths(1))));
         this.getChildren().addAll(username, messageContent);
     }
 

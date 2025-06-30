@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package javachat;
+package javachat.services;
 
 import javachat.shared.Message;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
@@ -16,37 +16,69 @@ import javachat.shared.HelloMessage;
 import java.util.logging.Logger;
 import javachat.shared.Greeting;
 import java.lang.reflect.Type;
+import javachat.controller.DataController;
+import javachat.dao.TempChatMessageDAO;
 import javachat.models.ChatMessage;
 import javachat.models.User;
-
+import javachat.views.ChatMessageComponent;
+import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.VBox;
 /**
  *
  * @author User
  */
-public class MyStompSessionHandler implements StompSessionHandler {
+public class ChatStompSessionHandler implements StompSessionHandler {
 
-    private static Logger logger = Logger.getLogger(MyStompSessionHandler.class.getName());
+    private static Logger logger = Logger.getLogger(ChatStompSessionHandler.class.getName());
+    private TempChatMessageDAO tcmd = TempChatMessageDAO.getInstance();
+    private DataController dataController = new DataController(tcmd);
+    private Node sharedComponent;
+    
+    public ChatStompSessionHandler(Node sharedComponent) {
+        this.sharedComponent = sharedComponent;
+    }
 
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
+
         /* Subscribing to /topic/messages will trigger an event to STOMP server to ensure that connection works and that STOMP server can
          receive and format data from client */
         session.subscribe("/topic/messages", this);
+
         /* Subscribing to /topic/greetings will trigger an event to STOMP server to send you a greeting */
         session.subscribe("/topic/greetings", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
                 return Greeting.class;
             }
-            
-            @Override 
+
+            @Override
             public void handleFrame(StompHeaders headers, Object payload) {
                 Greeting greeting = (Greeting) payload;
                 System.out.println("Received: " + greeting.getContent());
             }
         });
-        logger.info("Subscribed to /topic/greetings, sending" + getSampleMessage());
+
+        logger.info("Subscribed to /topic/greetings, sending a message with content " + getSampleMessage().getText());
         session.send("/app/chat", getHelloMessage());
+
+        /* Subscribe to global chat */
+        session.subscribe("/topic/globalchat", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                logger.info("Headers: " + headers);
+                return ChatMessage.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                ChatMessage chatMessage = (ChatMessage) payload;
+                logger.info("Received chat message: " + chatMessage.getContent());
+                dataController.handleIncomingChatMessage(chatMessage, (VBox) sharedComponent);
+            }
+        });
+
     }
 
     @Override
@@ -58,8 +90,8 @@ public class MyStompSessionHandler implements StompSessionHandler {
 
     @Override
     public void handleException(StompSession session, @Nullable StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
-        String sessionId = (session != null  && session.getSessionId() != null) ? session.getSessionId()  : "no-session"; 
-        logger.severe("Exception occured at session: " + sessionId + " | Exception message " + exception.getLocalizedMessage() + " caused by: " + exception.getCause()); 
+        String sessionId = (session != null && session.getSessionId() != null) ? session.getSessionId() : "no-session";
+        logger.severe("Exception occured at session: " + sessionId + " | Exception message " + exception.getLocalizedMessage() + " caused by: " + exception.getCause());
         logger.log(Level.SEVERE, "Exception stack trace:", exception);
     }
 
@@ -85,5 +117,5 @@ public class MyStompSessionHandler implements StompSessionHandler {
         hmsg.setName("vonchez");
         return hmsg;
     }
-    
+
 }

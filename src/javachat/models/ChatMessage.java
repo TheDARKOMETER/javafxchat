@@ -14,10 +14,11 @@ public class ChatMessage {
     private String content;
     private long timestamp;
     private User author;
-
     private int likes;
     private int dislikes;
     private UUID uuid;
+    
+    public ChatMessage() {}
     
     public ChatMessage(String content, long timestamp, User author, int likes, int dislikes, UUID uuid) {
         this.content = content;

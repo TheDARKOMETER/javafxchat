@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package javachat;
+package javachat.services;
 
+import javachat.services.ChatStompSessionHandler;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
@@ -11,7 +12,9 @@ import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.messaging.simp.stomp.StompSession;
 import java.util.Scanner;
+import javafx.scene.Node;
 import java.util.concurrent.ExecutionException;
+import javafx.scene.control.ScrollPane;
 import org.springframework.util.concurrent.ListenableFuture;
 /**
  *
@@ -24,11 +27,11 @@ public class StompClient {
         this.brokerURL = brokerURL;
     }
     
-    public StompSession createClient() throws InterruptedException, ExecutionException {
+    public StompSession createClient(Node sharedComponent, ScrollPane chatScrollPane) throws InterruptedException, ExecutionException {
         WebSocketClient client = new StandardWebSocketClient();
         WebSocketStompClient stompClient = new WebSocketStompClient(client);
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        StompSessionHandler sessionHandler = new MyStompSessionHandler();
+        StompSessionHandler sessionHandler = new ChatStompSessionHandler(sharedComponent);
         ListenableFuture<StompSession> session = stompClient.connect(brokerURL, sessionHandler);
         System.out.println("connected to " + brokerURL);
         return session.get() ;

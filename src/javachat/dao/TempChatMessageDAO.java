@@ -16,15 +16,13 @@ import javachat.services.TempChatService;
  */
 public class TempChatMessageDAO implements ChatMessageDAO {
 
-    TempChatService tcs;
+    private TempChatService tcs = TempChatService.getInstance();
+    private static TempChatMessageDAO instance;
     
-    public TempChatMessageDAO() {
-        tcs = TempChatService.getInstance();
-    }
+    private TempChatMessageDAO() {}
 
-    
     @Override
-    public ChatMessage getChatMessage(UUID uuid) throws ChatMessageException {
+    public ChatMessage getChatMessage(ChatMessage cmsg) throws ChatMessageException {
         return tcs.getTempMsg();
     }
 
@@ -32,5 +30,19 @@ public class TempChatMessageDAO implements ChatMessageDAO {
     public ArrayList<ChatMessage> getAllChatMessages() throws ChatMessageException {
         return tcs.getChatMessages();
     }
+    
+    @Override
+    public void addChatMessage(ChatMessage msg) {
+        tcs.addChatMessage(msg);
+    }
+    
+    
+    public static synchronized TempChatMessageDAO getInstance() {
+        if (instance == null) {
+            instance = new TempChatMessageDAO();
+        }
+        return instance;
+    }
+    
     
 }
