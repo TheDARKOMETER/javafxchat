@@ -22,8 +22,8 @@ public class TempChatMessageDAO implements ChatMessageDAO {
     private TempChatMessageDAO() {}
 
     @Override
-    public ChatMessage getChatMessage(ChatMessage cmsg) throws ChatMessageException {
-        return tcs.getTempMsg();
+    public ChatMessage getChatMessage(UUID uuid) throws ChatMessageException {
+        return tcs.getChatMessage(uuid);
     }
 
     @Override
@@ -34,6 +34,11 @@ public class TempChatMessageDAO implements ChatMessageDAO {
     @Override
     public void addChatMessage(ChatMessage msg) {
         tcs.addChatMessage(msg);
+    }
+    
+    @Override
+    public void setChatHistory(ArrayList<ChatMessage> chatMessages) throws ChatMessageException {
+        tcs.setChatMessages(chatMessages);
     }
     
     

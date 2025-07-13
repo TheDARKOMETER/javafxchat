@@ -4,6 +4,12 @@
  */
 package javachat.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.lang.reflect.ParameterizedType;
+import java.util.stream.Collectors;
 import javachat.shared.Message;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -16,6 +22,8 @@ import javachat.shared.HelloMessage;
 import java.util.logging.Logger;
 import javachat.shared.Greeting;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import javachat.controller.DataController;
 import javachat.dao.TempChatMessageDAO;
 import javachat.models.ChatMessage;
@@ -24,6 +32,9 @@ import javachat.views.ChatMessageComponent;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+
 /**
  *
  * @author User
@@ -32,9 +43,10 @@ public class ChatStompSessionHandler implements StompSessionHandler {
 
     private static Logger logger = Logger.getLogger(ChatStompSessionHandler.class.getName());
     private TempChatMessageDAO tcmd = TempChatMessageDAO.getInstance();
-    private DataController dataController = new DataController(tcmd);
+    private UserService userService = UserService.getInstance();
+    private DataController dataController = new DataController(tcmd, userService);
     private Node sharedComponent;
-    
+
     public ChatStompSessionHandler(Node sharedComponent) {
         this.sharedComponent = sharedComponent;
     }
@@ -64,18 +76,42 @@ public class ChatStompSessionHandler implements StompSessionHandler {
         session.send("/app/chat", getHelloMessage());
 
         /* Subscribe to global chat */
-        session.subscribe("/topic/globalchat", new StompFrameHandler() {
+        StompHeaders subscribeGlobalChatHeaders = new StompHeaders();
+        subscribeGlobalChatHeaders.setDestination("/topic/globalchat");
+        subscribeGlobalChatHeaders.add("username", dataController.getUser().getUsername());
+        session.subscribe(subscribeGlobalChatHeaders, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
                 logger.info("Headers: " + headers);
-                return ChatMessage.class;
+                if (headers.get("isSendingList") != null) {
+                    return new ParameterizedTypeReference<ArrayList<ChatMessage>>() {
+                    }.getType();
+                } else {
+                    return ChatMessage.class;
+                }
+
             }
 
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
-                ChatMessage chatMessage = (ChatMessage) payload;
-                logger.info("Received chat message: " + chatMessage.getContent());
-                dataController.handleIncomingChatMessage(chatMessage, (VBox) sharedComponent);
+                if (headers.get("isSendingList") != null) {
+                    //ArrayList<ChatMessage> chatMessageList = (ArrayList<ChatMessage>) payload;
+                    //List<?> rawList = (List<?>) payload;
+                    ObjectMapper mapper = new ObjectMapper();
+//
+//                    List<ChatMessage> chatMessageList = rawList.stream()
+//                            .map(item -> mapper.convertValue(item, ChatMessage.class))
+//                            .collect(Collectors.toList());
+                    List<ChatMessage> chatMessageList = mapper.convertValue(payload, new TypeReference<List<ChatMessage>>() {
+                    });
+                    logger.info("Received chat message list of type: " + chatMessageList.getClass() + " " + chatMessageList);
+                    dataController.handleChatMessageHistory((ArrayList<ChatMessage>) chatMessageList, (VBox) sharedComponent);
+
+                } else {
+                    ChatMessage chatMessage = (ChatMessage) payload;
+                    logger.info("Received chat message: " + chatMessage.getContent());
+                    dataController.handleIncomingChatMessage(chatMessage, (VBox) sharedComponent);
+                }
             }
         });
 

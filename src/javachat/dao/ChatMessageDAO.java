@@ -16,7 +16,8 @@ import javachat.exceptions.ChatMessageException;
 
 // Strictly for testing only, not for actual use.
 public interface ChatMessageDAO {
-    public ChatMessage getChatMessage(ChatMessage cmsg) throws ChatMessageException;
+    public ChatMessage getChatMessage(UUID uuid) throws ChatMessageException;
     public ArrayList<ChatMessage> getAllChatMessages() throws ChatMessageException;
     public void addChatMessage(ChatMessage msg) throws ChatMessageException;
+    public void setChatHistory(ArrayList<ChatMessage> chatMessages) throws ChatMessageException;
 }

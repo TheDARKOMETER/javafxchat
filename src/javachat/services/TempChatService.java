@@ -7,54 +7,50 @@ package javachat.services;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.UUID;
+import javachat.exceptions.ChatMessageException;
 import javachat.models.User;
 import javachat.models.ChatMessage;
 
 /**
- * 
+ *
  *
  * @author thebe
  */
 public class TempChatService {
+
     private static TempChatService instance;
-    private static ArrayList<ChatMessage> chatMessages;
-    
-    private static User tempUser = new User("vonchez", 0, "abcd@abc.com");
-    private static ChatMessage tempMsg = new ChatMessage("Hello world", 0, tempUser, 0, 0, UUID.randomUUID());
+    private ArrayList<ChatMessage> chatMessages = new ArrayList<>();
 
-    public ChatMessage getTempMsg() {
-        return tempMsg;
-    }
-
-    public void setTempMsg(ChatMessage tempMsg) {
-        TempChatService.tempMsg = tempMsg;
-    }
-
-    
     public ArrayList<ChatMessage> getChatMessages() {
         return chatMessages;
     }
 
+    public ChatMessage getChatMessage(UUID uuid) throws ChatMessageException {
+        for (ChatMessage cmsg : chatMessages) {
+            if (cmsg.getUuid().equals(uuid)) {
+                return cmsg;
+            }
+        }
+        throw new ChatMessageException("Chat message not found");
+    }
+
     public void setChatMessages(ArrayList<ChatMessage> chatMessages) {
-        TempChatService.chatMessages = chatMessages;
+        this.chatMessages = chatMessages;
     }
-    
+
     public void addChatMessage(ChatMessage chatMessage) {
-        TempChatService.chatMessages.add(chatMessage);
+        this.chatMessages.add(chatMessage);
     }
-    
+
     private TempChatService() {
     }
-    
-    
+
     public static TempChatService getInstance() {
         if (instance == null) {
-            chatMessages = new ArrayList<>();
-            chatMessages.add(tempMsg);
             return new TempChatService();
         } else {
             return instance;
         }
     }
-     
+
 }

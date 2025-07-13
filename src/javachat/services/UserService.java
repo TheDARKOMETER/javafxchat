@@ -10,8 +10,10 @@ import javachat.models.User;
  * @author thebe
  */
 public class UserService {
-    private User currentUser;
+    //private User currentUser;
     private static UserService instance;
+    private User tempUser = new User("vonchez", 0, "abcd@abc.com");
+
     
     private UserService() {}
     
@@ -23,11 +25,11 @@ public class UserService {
     }
     
     public User getUser() {
-        return currentUser;
+        return tempUser;
     }
     
     public void signUp(String username, String password) {
-        
+        // TODO
     }
     
 }

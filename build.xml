@@ -15,7 +15,6 @@
         <javac srcdir="${src.dir}" encoding="${encoding}" destdir="${classes.dir}" includeantruntime="false">
             <classpath>
                 <fileset dir="${lib.dir}" includes="*.jar"/>
-                <fileset dir="${javafx.lib}" includes="*.jar"/>
             </classpath>
         </javac>
     </target>

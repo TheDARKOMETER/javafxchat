@@ -45,6 +45,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import org.springframework.messaging.simp.stomp.StompSession;
 import javachat.models.User;
+import javachat.services.UserService;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.MenuBar;
@@ -62,7 +63,8 @@ public class ChatFrame extends JApplet {
     private static final int JFXPANEL_HEIGHT_INT = 750;
     private static ArrayList<ChatMessageComponent> allChatMessages;
     private TempChatMessageDAO tcmd = TempChatMessageDAO.getInstance();
-    private DataController dataController = new DataController(tcmd);
+    private UserService userService = UserService.getInstance();
+    private DataController dataController = new DataController(tcmd, userService);
     private VBox chatStack;
     private ScrollPane chatScrollPane;
     private static Logger dataLogger = Logger.getLogger(ChatFrame.class.getName());
@@ -177,18 +179,20 @@ public class ChatFrame extends JApplet {
         userList.setStyle("-fx-background-color:white;");
 
         // Demo Code to see if retrieving is possible
-        allChatMessages = dataController.getChatMessagesToRender();
+        //allChatMessages = dataController.getChatMessagesToRender();
 
         // Chat Messages
-        dataLogger.info("First chat message content is: " + allChatMessages.get(0).getMessage());
         chatScrollPane = new ScrollPane();
         chatScrollPane.setFitToWidth(true);
         chatStack = new VBox();
-        chatStack.getChildren().addAll(allChatMessages);
         chatScrollPane.setContent(chatStack);
         chatStack.heightProperty().addListener((obs, oldVal, newVal) -> {
             chatScrollPane.setVvalue(1.0);
         });
+//        if (allChatMessages.size() > 0) {
+//            dataLogger.info("First chat message content is: " + allChatMessages.get(0).getMessage());
+//            chatStack.getChildren().addAll(allChatMessages);
+//        }
 
         // Add ChatMessage and userList to SplitPane
         middlePane.getItems().addAll(userList, chatScrollPane);

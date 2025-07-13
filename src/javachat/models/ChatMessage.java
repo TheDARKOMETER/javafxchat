@@ -4,12 +4,15 @@
  */
 package javachat.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.UUID;
 
 /**
  *
- * @author Administrator
+ * @author Administrat
+ * or
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatMessage {
     private String content;
     private long timestamp;
