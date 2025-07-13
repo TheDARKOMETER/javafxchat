@@ -25,7 +25,7 @@ public class DataController {
     private ChatMessageDAO cmd;
     private ArrayList<ChatMessageComponent> chatMessageComponents = new ArrayList<>();
     private UserService userService;
-
+    
     public DataController(ChatMessageDAO cmd, UserService userService) {
         this.cmd = cmd;
         this.userService = userService;

@@ -20,6 +20,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -33,11 +37,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
+import javafx.animation.TranslateTransition;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javachat.views.SignUp;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javachat.controller.DataController;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
+
 import javachat.dao.TempChatMessageDAO;
 import javachat.models.ChatMessage;
 import java.util.ArrayList;
@@ -48,10 +57,13 @@ import javachat.models.User;
 import javachat.services.UserService;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
+import javafx.scene.layout.Region;
+import javafx.util.Duration;
 
 /**
  *
@@ -66,6 +78,7 @@ public class ChatFrame extends JApplet {
     private UserService userService = UserService.getInstance();
     private DataController dataController = new DataController(tcmd, userService);
     private VBox chatStack;
+    private VBox slidingMenu;
     private ScrollPane chatScrollPane;
     private static Logger dataLogger = Logger.getLogger(ChatFrame.class.getName());
     private StompSession stompSession;
@@ -125,11 +138,17 @@ public class ChatFrame extends JApplet {
 
     private void createScene() {
 
+        Desktop desktop = Desktop.getDesktop();
         BorderPane root = new BorderPane();
         SplitPane middlePane = new SplitPane();
         MenuBar userMenuBar = new MenuBar();
-        Menu menuAuthentication = new Menu("User");
+        Menu menuAuthentication = new Menu("Settings");
         MenuItem loginMenuItem = new MenuItem("Login");
+        loginMenuItem.setOnAction(e -> {
+            dataLogger.info("Login option clicked");
+            SignUp signUp = new SignUp();
+            signUp.init();
+        });
         MenuItem signupMenuItem = new MenuItem("Sign Up");
         menuAuthentication.getItems().addAll(loginMenuItem, signupMenuItem);
         userMenuBar.getMenus().add(menuAuthentication);
@@ -145,32 +164,39 @@ public class ChatFrame extends JApplet {
         title.setFill(Color.WHITE);
         menuAndHeaderVBox.getChildren().addAll(userMenuBar, headerHBox);
 
+        Region spacer = new Region();
         StackPane settingsStack = new StackPane();
-
         Text settingsUnicode = new Text("☰");
         settingsUnicode.setFont(Font.font("Arial", FontWeight.BOLD, 18));
         settingsUnicode.setFill(Color.WHITE);
         settingsStack.setAlignment(Pos.CENTER_RIGHT);
-
         StackPane settingsPane = new StackPane();
         settingsPane.setMaxSize(30, 30);
-
         Rectangle settingsPaneShape = new Rectangle(30, 30);
         settingsPaneShape.setArcHeight(10);
         settingsPaneShape.setArcWidth(10);
         settingsPaneShape.setFill(Color.web("#102E50"));
-
         settingsPane.getChildren().add(settingsPaneShape);
-
         settingsStack.getChildren().add(settingsPane);
         settingsPane.getChildren().add(settingsUnicode);
+        Button settingsButton = new Button();
+        settingsButton.setGraphic(settingsStack);
+        settingsButton.setStyle("-fx-background-color: transparent;");
+        settingsButton.setOnMouseEntered(e -> {
+            Effect shadow = new DropShadow();
+            settingsButton.setEffect(shadow);
+        });
+
+        settingsButton.setOnMouseExited(e -> {
+            settingsButton.setEffect(null);
+        });
 
         headerHBox.setAlignment(Pos.CENTER_LEFT);
-        headerHBox.getChildren().add(title);
-        headerHBox.getChildren().add(settingsStack);
-        HBox.setHgrow(settingsStack, Priority.ALWAYS);
+        headerHBox.getChildren().addAll(title, spacer, settingsButton);
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
         VBox userList = new VBox();
+        userList.setAlignment(Pos.BASELINE_CENTER);
         userList.setPadding(new Insets(15, 12, 15, 12));
         Text ulLabel = new Text("Users:");
         ulLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
@@ -180,7 +206,6 @@ public class ChatFrame extends JApplet {
 
         // Demo Code to see if retrieving is possible
         //allChatMessages = dataController.getChatMessagesToRender();
-
         // Chat Messages
         chatScrollPane = new ScrollPane();
         chatScrollPane.setFitToWidth(true);
@@ -224,7 +249,96 @@ public class ChatFrame extends JApplet {
         //root.setLeft(userList);
         root.setCenter(middlePane);
         root.setBottom(userControls);
-        fxContainer.setScene(new Scene(root));
+
+        // Stackpane as new root in order to add sliding menu
+        StackPane newRoot = new StackPane(root);
+
+        // Sliding menu
+        slidingMenu = new VBox();
+        StackPane.setAlignment(slidingMenu, Pos.CENTER_RIGHT); // align it to the right
+        slidingMenu.setMaxHeight(Region.USE_COMPUTED_SIZE);
+        slidingMenu.setPrefWidth(200);
+        slidingMenu.setMaxWidth(Region.USE_PREF_SIZE);
+        slidingMenu.setTranslateX(200);
+        slidingMenu.setStyle("-fx-background-color: #333; -fx-padding: 10;");
+        settingsButton.setOnAction((e) -> {
+            TranslateTransition tt = new TranslateTransition(Duration.millis(200), slidingMenu);
+            tt.setByX(-200);
+            tt.play();
+        });
+
+        HBox slidingMenuItem = new HBox();
+        Button closeSlidingMenuButton = new Button("Close");
+        closeSlidingMenuButton.setOnAction((evt) -> {
+            closeSlidingMenu();
+        });
+        closeSlidingMenuButton.setTextFill(Color.WHITE);
+        closeSlidingMenuButton.setStyle("-fx-background-color: transparent;");
+        slidingMenuItem.setAlignment(Pos.CENTER);
+        slidingMenuItem.getChildren().add(closeSlidingMenuButton);
+
+        HBox slidingMenuItem2 = new HBox();
+        Button slidingMenuButton2 = new Button("Report an Issue");
+        slidingMenuButton2.setOnAction((evt) -> {
+            dataLogger.info("Clicking uri");
+            try {
+                URI uri = new URI("http://localhost:8080/jsocketapi/index.htm");
+                desktop.browse(uri);
+            } catch (IOException ie) {
+                ie.printStackTrace();
+            } catch (URISyntaxException use) {
+                use.printStackTrace();
+            }
+        });
+        slidingMenuItem2.setAlignment(Pos.CENTER);
+        slidingMenuButton2.setTextFill(Color.WHITE);
+        slidingMenuButton2.setStyle("-fx-background-color: transparent");
+        slidingMenuItem2.getChildren().add(slidingMenuButton2);
+
+        slidingMenu.setSpacing(10);
+
+        HBox slidingMenuItem3 = new HBox();
+        Button slidingMenuButton3 = new Button("Contact");
+        slidingMenuButton3.setOnAction(e -> {
+            dataLogger.info("Clicking uri");
+            try {
+                URI uri = new URI("http://localhost:8080/jsocketapi/index.htm");
+                desktop.browse(uri);
+            } catch (IOException ie) {
+                ie.printStackTrace();
+            } catch (URISyntaxException use) {
+                use.printStackTrace();
+            }
+        });
+        slidingMenuItem3.setAlignment(Pos.CENTER);
+        slidingMenuButton3.setTextFill(Color.WHITE);
+        slidingMenuButton3.setStyle("-fx-background-color: transparent");
+        slidingMenuItem3.getChildren().add(slidingMenuButton3);
+        slidingMenu.setSpacing(16);
+
+        slidingMenu.getChildren().addAll(slidingMenuItem, slidingMenuItem2, slidingMenuItem3);
+
+        root.setOnMouseClicked(e -> {
+            closeSlidingMenu();
+        });
+
+        for (Node child : root.getChildrenUnmodifiable()) {
+            child.setOnMouseClicked(e -> {
+                closeSlidingMenu();
+            });
+        }
+
+        HBox slidingMenuItemFooterHBox = new HBox();
+        Label footer = new Label("© 2025 JSocketChat.");
+        slidingMenuItemFooterHBox.getChildren().add(footer);
+        slidingMenuItemFooterHBox.setAlignment(Pos.BOTTOM_CENTER);
+        slidingMenu.getChildren().add(slidingMenuItemFooterHBox);
+        VBox.setVgrow(slidingMenuItemFooterHBox, Priority.ALWAYS);
+        footer.setTextFill(Color.WHITE);
+
+        newRoot.getChildren().add(slidingMenu);
+        fxContainer.setScene(new Scene(newRoot));
+
     }
 
     private StompSession initializeSession(Node sharedComponent) {
@@ -240,6 +354,13 @@ public class ChatFrame extends JApplet {
 
     private void setStompSession(StompSession ss) {
         this.stompSession = ss;
+    }
+
+    private void closeSlidingMenu() {
+        dataLogger.info("Closing sliding menu");
+        TranslateTransition tt = new TranslateTransition(Duration.millis(200), slidingMenu);
+        tt.setByX(200);
+        tt.play();
     }
 
 }
