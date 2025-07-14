@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package javachat.views;
+import java.util.Date;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -13,6 +14,7 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.scene.layout.VBox;
 
 
 /**
@@ -29,7 +31,11 @@ public class ChatMessageComponent extends HBox {
         this.data = data;
         // Components
         Label username = new Label(data.getAuthor().getUsername() + ":");
+        Date date = new Date(data.getTimestamp());
+        Label timestamp = new Label(date.toString());
         username.setStyle("-fx-font-weight:bold;");
+        VBox messageVBox = new VBox();
+        
         Label messageContent = new Label(data.getContent());
         
         // CMC Styling

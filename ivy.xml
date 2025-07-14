@@ -78,6 +78,8 @@
         <dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.13.5"/>
         <dependency org="com.fasterxml.jackson.core" name="jackson-annotations" rev="2.13.5"/>
         
+        <!-- https://mvnrepository.com/artifact/at.favre.lib/bcrypt -->
+        <dependency org="at.favre.lib" name="bcrypt" rev="0.10.2"/>
         <!-- Global excludes -->
         <exclude org="junit" module="junit" conf="core,default,httpclient,oro,vfs,sftp,standalone,ant"/>
         <exclude org="org.hamcrest" module="hamcrest-core" conf="core,default,httpclient,oro,vfs,sftp,standalone,ant"/>

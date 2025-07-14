@@ -13,13 +13,21 @@ public class User {
     private String username;
     private long createdAt;
     private String email;
-
+    private String password;
+    
     public User() {}
     
     public User(String username, long createdAt, String email) {
         this.username = username;
         this.createdAt = createdAt;
         this.email = email;
+    }
+    
+    public User(String username, long createdAt, String email, String password) {
+        this.username = username;
+        this.createdAt = createdAt;
+        this.email = email;
+        this.password = password;
     }
 
     public String getUsername() {
