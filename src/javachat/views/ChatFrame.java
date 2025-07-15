@@ -40,7 +40,7 @@ import javax.swing.JFrame;
 import javafx.animation.TranslateTransition;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javachat.views.SignUp;
+import javachat.views.Login;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javachat.controller.DataController;
@@ -146,8 +146,8 @@ public class ChatFrame extends JApplet {
         MenuItem loginMenuItem = new MenuItem("Login");
         loginMenuItem.setOnAction(e -> {
             dataLogger.info("Login option clicked");
-            SignUp signUp = new SignUp();
-            signUp.init();
+            Login login = new Login();
+            login.initLoginPage();
         });
         MenuItem signupMenuItem = new MenuItem("Sign Up");
         menuAuthentication.getItems().addAll(loginMenuItem, signupMenuItem);
@@ -348,6 +348,7 @@ public class ChatFrame extends JApplet {
             session = client.createClient(sharedComponent, chatScrollPane);
         } catch (Exception e) {
             e.printStackTrace();
+            // TODO: Add reconnect button to application
         }
         return session;
     }
