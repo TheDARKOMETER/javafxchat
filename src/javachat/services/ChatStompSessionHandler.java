@@ -84,8 +84,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
             public Type getPayloadType(StompHeaders headers) {
                 logger.info("Headers: " + headers);
                 if (headers.get("isSendingList") != null) {
-                    return new ParameterizedTypeReference<ArrayList<ChatMessage>>() {
-                    }.getType();
+                    return new ParameterizedTypeReference<ArrayList<ChatMessage>>() {}.getType();
                 } else {
                     return ChatMessage.class;
                 }

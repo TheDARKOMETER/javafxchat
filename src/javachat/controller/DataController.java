@@ -36,11 +36,6 @@ public class DataController {
             chatMessageComponents.add(new ChatMessageComponent(cmsg));
         }
     }
-
-    private void createChatMessageComponent(ChatMessage cmsg) {
-        chatMessageComponents.add(new ChatMessageComponent(cmsg));
-    }
-
     // Render all chat messages
 
 
