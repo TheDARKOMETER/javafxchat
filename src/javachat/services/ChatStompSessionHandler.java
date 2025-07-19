@@ -82,38 +82,38 @@ public class ChatStompSessionHandler implements StompSessionHandler {
         session.subscribe(subscribeGlobalChatHeaders, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
-                logger.info("Headers: " + headers);
-                if (headers.get("isSendingList") != null) {
-                    return new ParameterizedTypeReference<ArrayList<ChatMessage>>() {}.getType();
-                } else {
-                    return ChatMessage.class;
-                }
-
+                return ChatMessage.class;
             }
 
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
-                if (headers.get("isSendingList") != null) {
-                    //ArrayList<ChatMessage> chatMessageList = (ArrayList<ChatMessage>) payload;
-                    //List<?> rawList = (List<?>) payload;
-                    ObjectMapper mapper = new ObjectMapper();
+                ChatMessage chatMessage = (ChatMessage) payload;
+                logger.info("Received chat message: " + chatMessage.getContent());
+                dataController.handleIncomingChatMessage(chatMessage, (VBox) sharedComponent);
+
+            }
+        });
+
+        session.subscribe("/user/queue/specific-user", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return new ParameterizedTypeReference<ArrayList<ChatMessage>>() {
+                }.getType();
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                ObjectMapper mapper = new ObjectMapper();
 //
 //                    List<ChatMessage> chatMessageList = rawList.stream()
 //                            .map(item -> mapper.convertValue(item, ChatMessage.class))
 //                            .collect(Collectors.toList());
-                    List<ChatMessage> chatMessageList = mapper.convertValue(payload, new TypeReference<List<ChatMessage>>() {
-                    });
-                    logger.info("Received chat message list of type: " + chatMessageList.getClass() + " " + chatMessageList);
-                    dataController.handleChatMessageHistory((ArrayList<ChatMessage>) chatMessageList, (VBox) sharedComponent);
-
-                } else {
-                    ChatMessage chatMessage = (ChatMessage) payload;
-                    logger.info("Received chat message: " + chatMessage.getContent());
-                    dataController.handleIncomingChatMessage(chatMessage, (VBox) sharedComponent);
-                }
+                List<ChatMessage> chatMessageList = mapper.convertValue(payload, new TypeReference<List<ChatMessage>>() {
+                });
+                logger.info("Received chat message history of size: " + chatMessageList.size());
+                dataController.handleChatMessageHistory((ArrayList<ChatMessage>) chatMessageList, (VBox) sharedComponent);
             }
         });
-
     }
 
     @Override
