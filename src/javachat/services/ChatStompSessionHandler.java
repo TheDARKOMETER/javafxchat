@@ -58,20 +58,6 @@ public class ChatStompSessionHandler implements StompSessionHandler {
          receive and format data from client */
         session.subscribe("/topic/messages", this);
 
-        /* Subscribing to /topic/greetings will trigger an event to STOMP server to send you a greeting */
-        session.subscribe("/topic/greetings", new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return Greeting.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                Greeting greeting = (Greeting) payload;
-                System.out.println("Received: " + greeting.getContent());
-            }
-        });
-
         logger.info("Subscribed to /topic/greetings, sending a message with content " + getSampleMessage().getText());
         session.send("/app/chat", getHelloMessage());
 
@@ -91,6 +77,25 @@ public class ChatStompSessionHandler implements StompSessionHandler {
                 logger.info("Received chat message: " + chatMessage.getContent());
                 dataController.handleIncomingChatMessage(chatMessage, (VBox) sharedComponent);
 
+                // 
+            }
+        });
+
+        /* Subscribing to /topic/greetings will trigger an event to STOMP server to send you a greeting */
+        StompHeaders subscribeGreetingChatHeaders = new StompHeaders();
+        subscribeGreetingChatHeaders.setDestination("/topic/greetings");
+        subscribeGreetingChatHeaders.add("username", dataController.getUser().getUsername());
+        session.subscribe("/topic/greetings", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return ChatMessage.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                ChatMessage welcomeMessage = (ChatMessage) payload;
+                logger.info("Received: " + welcomeMessage.getContent());
+                dataController.handleIncomingChatMessage(welcomeMessage, (VBox) sharedComponent);
             }
         });
 
@@ -104,7 +109,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
                 ObjectMapper mapper = new ObjectMapper();
-//
+//              Verbose way to convert payload to List<ChatMessage>
 //                    List<ChatMessage> chatMessageList = rawList.stream()
 //                            .map(item -> mapper.convertValue(item, ChatMessage.class))
 //                            .collect(Collectors.toList());
