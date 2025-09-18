@@ -46,7 +46,6 @@ import javafx.scene.text.TextAlignment;
 import javachat.controller.DataController;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
-
 import javachat.dao.TempChatMessageDAO;
 import javachat.models.ChatMessage;
 import java.util.ArrayList;

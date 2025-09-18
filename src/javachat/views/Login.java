@@ -14,11 +14,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
+import java.util.logging.Logger;
+import javafx.scene.control.PasswordField;
 
 /**
  *
@@ -26,15 +29,16 @@ import javax.swing.JFrame;
  */
 public class Login extends JApplet {
 
-    private static JFXPanel jFXPanel;
+    private static JFXPanel jfxPanel;
     private static final int JFXPANEL_WIDTH_INT = 300;
     private static final int JFXPANEL_HEIGHT_INT = 140;
+    Logger loginLogger = Logger.getLogger(Login.class.getName());
 
     @Override
     public void init() {
-        jFXPanel = new JFXPanel();
-        jFXPanel.setPreferredSize(new Dimension(JFXPANEL_WIDTH_INT, JFXPANEL_HEIGHT_INT));
-        add(jFXPanel, BorderLayout.CENTER);
+        jfxPanel = new JFXPanel();
+        jfxPanel.setPreferredSize(new Dimension(JFXPANEL_WIDTH_INT, JFXPANEL_HEIGHT_INT));
+        add(jfxPanel, BorderLayout.CENTER);
         Platform.runLater(() -> {
             createScene();
         });
@@ -53,34 +57,33 @@ public class Login extends JApplet {
     }
 
     private void createScene() {
-        VBox contentBox = new VBox();
-
-        HBox usernameBox = new HBox();
+        
+        GridPane loginForm = new GridPane();
+        loginForm.setAlignment(Pos.CENTER);
+        loginForm.setHgap(10);
+        loginForm.setVgap(10);
+        loginForm.setPadding(new Insets(25,25,25,25));
+        
         Label usernameLabel = new Label("Username: ");
         TextField usernameInput = new TextField();
-        usernameBox.setAlignment(Pos.CENTER);
-        usernameBox.getChildren().addAll(usernameLabel, usernameInput);
+        loginForm.add(usernameLabel, 0, 0);
+        loginForm.add(usernameInput, 1, 0);
 
-        HBox passwordBox = new HBox();
         Label passwordLabel = new Label("Password: ");
-        TextField passwordInput = new TextField();
-        passwordBox.setAlignment(Pos.CENTER);
-        passwordBox.getChildren().addAll(passwordLabel, passwordInput);
+        PasswordField passwordInput = new PasswordField();
+        loginForm.add(passwordLabel, 0, 1);
+        loginForm.add(passwordInput, 1, 1);
 
-        Button loginBtn = new Button();
+        Button loginBtn = new Button("Login");
         loginBtn.setOnAction(e -> {
-            // TODO: Encrypt first, then perisst to User class
+            loginLogger.info(usernameInput.getText() + " " + passwordInput.getText());
         });
         
-        // Layout Constraints
-        HBox.setHgrow(usernameInput, Priority.ALWAYS);
-        HBox.setHgrow(passwordInput, Priority.ALWAYS);
+        HBox centerHBox = new HBox();
+        centerHBox.getChildren().add(loginBtn);
+        centerHBox.setAlignment(Pos.CENTER);
+        loginForm.add(centerHBox, 0, 2, 2, 1);
 
-        contentBox.getChildren().addAll(usernameBox, passwordBox);
-        contentBox.setAlignment(Pos.CENTER);
-        contentBox.setSpacing(10);
-        contentBox.setPadding(new Insets(2, 2, 2, 2));
-
-        jFXPanel.setScene(new Scene(contentBox));
+        jfxPanel.setScene(new Scene(loginForm, JFXPANEL_WIDTH_INT, JFXPANEL_HEIGHT_INT));
     }
 }
