@@ -4,7 +4,6 @@
  */
 package javachat.views;
 
-import com.sun.deploy.net.HttpRequest;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javafx.application.Platform;
@@ -30,14 +29,14 @@ import javafx.scene.control.PasswordField;
  *
  * @author thebe
  */
-public class Login extends JApplet {
+public class SignUp extends JApplet {
 
     private static JFXPanel jfxPanel;
     private static final int JFXPANEL_WIDTH_INT = 380;
     private static final int JFXPANEL_HEIGHT_INT = 210;
     private RESTClient restClient = new RESTClient();
 
-    Logger loginLogger = Logger.getLogger(SignUp.class.getName());
+    Logger signUpLogger = Logger.getLogger(SignUp.class.getName());
 
     @Override
     public void init() {
@@ -49,7 +48,7 @@ public class Login extends JApplet {
         });
     }
 
-    public void initLoginPage() {
+    public void initSignUpPage() {
         JApplet applet = new SignUp();
         applet.init();
         JFrame frame = new JFrame("Sign Up");
@@ -74,19 +73,31 @@ public class Login extends JApplet {
         loginForm.add(usernameLabel, 0, 0);
         loginForm.add(usernameInput, 1, 0);
 
+        Label emailLabel = new Label("Email: ");
+        TextField emailInput = new TextField();
+        loginForm.add(emailLabel, 0, 1);
+        loginForm.add(emailInput, 1, 1);
+
         Label passwordLabel = new Label("Password: ");
         PasswordField passwordInput = new PasswordField();
-        loginForm.add(passwordLabel, 0, 1);
-        loginForm.add(passwordInput, 1, 1);
+        loginForm.add(passwordLabel, 0, 2);
+        loginForm.add(passwordInput, 1, 2);
 
-        Button loginBtn = new Button("Sign Up");
-        loginBtn.setOnAction(e -> {
-            User userCredentials = new User(usernameInput.getText(), passwordInput.getText());
-            restClient.login(userCredentials);
+        Label confirmPasswordLabel = new Label("Confirm Password: ");
+        PasswordField confirmPasswordInput = new PasswordField();
+        loginForm.add(confirmPasswordLabel, 0, 3);
+        loginForm.add(confirmPasswordInput, 1, 3);
+
+        Button signUpBtn = new Button("Sign Up");
+        signUpBtn.setOnAction(e -> {
+            User user = new User(usernameInput.getText(), System.currentTimeMillis(), emailInput.getText(), passwordInput.getText());
+            signUpLogger.info("Attempting to sign up: " + usernameInput.getText() + " " + passwordInput.getText());
+            User response = restClient.signUp(user);
+            signUpLogger.info("User posted: " + response.getUsername());
         });
 
         HBox centerHBox = new HBox();
-        centerHBox.getChildren().add(loginBtn);
+        centerHBox.getChildren().add(signUpBtn);
         centerHBox.setAlignment(Pos.CENTER);
         loginForm.add(centerHBox, 0, 4, 2, 1);
 

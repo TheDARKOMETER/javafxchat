@@ -40,7 +40,7 @@ import javax.swing.JFrame;
 import javafx.animation.TranslateTransition;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javachat.views.Login;
+import javachat.views.SignUp;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javachat.controller.DataController;
@@ -142,13 +142,13 @@ public class ChatFrame extends JApplet {
         SplitPane middlePane = new SplitPane();
         MenuBar userMenuBar = new MenuBar();
         Menu menuAuthentication = new Menu("Settings");
-        MenuItem loginMenuItem = new MenuItem("Login");
+        MenuItem loginMenuItem = new MenuItem("Sign Up");
         loginMenuItem.setOnAction(e -> {
             dataLogger.info("Login option clicked");
-            Login login = new Login();
-            login.initLoginPage();
+            SignUp signUp = new SignUp();
+            signUp.initSignUpPage();
         });
-        MenuItem signupMenuItem = new MenuItem("Sign Up");
+        MenuItem signupMenuItem = new MenuItem("Login");
         menuAuthentication.getItems().addAll(loginMenuItem, signupMenuItem);
         userMenuBar.getMenus().add(menuAuthentication);
 

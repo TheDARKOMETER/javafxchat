@@ -14,15 +14,30 @@ public class User {
     private long createdAt;
     private String email;
     private String password;
-    
-    public User() {}
-    
+    private String role;
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public User() {
+    }
+
     public User(String username, long createdAt, String email) {
         this.username = username;
         this.createdAt = createdAt;
         this.email = email;
     }
-    
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public User(String username, long createdAt, String email, String password) {
         this.username = username;
         this.createdAt = createdAt;
@@ -36,6 +51,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public long getCreatedAt() {

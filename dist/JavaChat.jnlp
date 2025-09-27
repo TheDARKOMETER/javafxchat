@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" java-vm-args="-Djava.security.policy=applet.policy "  href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="JavaChat.jar" size="28498" download="eager" />
+    <jar href="JavaChat.jar" size="31805" download="eager" />
     <jar href="lib\Bcrypt.jar" size="31076" download="eager" />
     <jar href="lib\bcrypt-0.10.2.jar" size="40575" download="eager" />
     <jar href="lib\commons-logging-1.3.5.jar" size="73737" download="eager" />
