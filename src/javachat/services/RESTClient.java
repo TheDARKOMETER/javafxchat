@@ -16,14 +16,13 @@ public class RESTClient {
 
     RestTemplate rt = new RestTemplate();
     String userResourceUrl = "http://localhost:8080/jsocketapi/user";
-
+    
     public User signUp(User user) {
         HttpEntity<User> request = new HttpEntity<User>(user);
         return rt.postForObject(userResourceUrl + "/signup", request, User.class);
     }
 
     public User login(User user) {
-        String userResourceUrl = "http://localhost:8080/jsocketapi/user";
         HttpEntity<User> request = new HttpEntity<User>(user);
         return rt.postForObject(userResourceUrl + "/login", request, User.class);
     }

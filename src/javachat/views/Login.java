@@ -4,7 +4,6 @@
  */
 package javachat.views;
 
-import com.sun.deploy.net.HttpRequest;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javafx.application.Platform;
@@ -24,6 +23,7 @@ import javax.swing.JFrame;
 import java.util.logging.Logger;
 import javachat.models.User;
 import javachat.services.RESTClient;
+import javachat.services.UserAuthStore;
 import javafx.scene.control.PasswordField;
 
 /**
@@ -36,6 +36,7 @@ public class Login extends JApplet {
     private static final int JFXPANEL_WIDTH_INT = 380;
     private static final int JFXPANEL_HEIGHT_INT = 210;
     private RESTClient restClient = new RESTClient();
+    private UserAuthStore userService = UserAuthStore.getInstance();
 
     Logger loginLogger = Logger.getLogger(SignUp.class.getName());
 
@@ -50,7 +51,7 @@ public class Login extends JApplet {
     }
 
     public void initLoginPage() {
-        JApplet applet = new SignUp();
+        JApplet applet = new Login();
         applet.init();
         JFrame frame = new JFrame("Sign Up");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -82,7 +83,8 @@ public class Login extends JApplet {
         Button loginBtn = new Button("Sign Up");
         loginBtn.setOnAction(e -> {
             User userCredentials = new User(usernameInput.getText(), passwordInput.getText());
-            restClient.login(userCredentials);
+            User loginUser = restClient.login(userCredentials);
+            userService.setUser(loginUser);
         });
 
         HBox centerHBox = new HBox();

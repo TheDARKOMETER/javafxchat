@@ -16,9 +16,9 @@ import javachat.models.ChatMessage;
  *
  * @author thebe
  */
-public class TempChatService {
+public class ChatService {
 
-    private static TempChatService instance;
+    private static ChatService instance;
     private ArrayList<ChatMessage> chatMessages = new ArrayList<>();
 
     public ArrayList<ChatMessage> getChatMessages() {
@@ -42,12 +42,12 @@ public class TempChatService {
         this.chatMessages.add(chatMessage);
     }
 
-    private TempChatService() {
+    private ChatService() {
     }
 
-    public static TempChatService getInstance() {
+    public static ChatService getInstance() {
         if (instance == null) {
-            return new TempChatService();
+            return new ChatService();
         } else {
             return instance;
         }

@@ -22,10 +22,12 @@ import javachat.shared.HelloMessage;
 import java.util.logging.Logger;
 import javachat.shared.Greeting;
 import java.lang.reflect.Type;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javachat.controller.DataController;
-import javachat.dao.TempChatMessageDAO;
+import javachat.dao.ChatMessageHandler;
 import javachat.models.ChatMessage;
 import javachat.models.User;
 import javachat.views.ChatMessageComponent;
@@ -42,9 +44,9 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 public class ChatStompSessionHandler implements StompSessionHandler {
 
     private static Logger logger = Logger.getLogger(ChatStompSessionHandler.class.getName());
-    private TempChatMessageDAO tcmd = TempChatMessageDAO.getInstance();
-    private UserService userService = UserService.getInstance();
-    private DataController dataController = new DataController(tcmd, userService);
+    private ChatMessageHandler tcmd = ChatMessageHandler.getInstance();
+    private UserAuthStore userAuthStore = UserAuthStore.getInstance();
+    private DataController dataController = new DataController(tcmd);
     private Node sharedComponent;
 
     public ChatStompSessionHandler(Node sharedComponent) {
@@ -54,6 +56,12 @@ public class ChatStompSessionHandler implements StompSessionHandler {
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
 
+        String handshakeUUID = connectedHeaders.getFirst("user-name");
+
+        // Guest user when no User persisted/File stored
+        userAuthStore.setUser(new User("Guest-" + handshakeUUID, System.currentTimeMillis(), ""));
+        logger.info("Setting up user store with username: " + userAuthStore.getUser().getUsername());
+        userAuthStore.setSessionUUID(handshakeUUID);
         /* Subscribing to /topic/messages will trigger an event to STOMP server to ensure that connection works and that STOMP server can
          receive and format data from client */
         session.subscribe("/topic/messages", this);
@@ -64,7 +72,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
         /* Subscribe to global chat */
         StompHeaders subscribeGlobalChatHeaders = new StompHeaders();
         subscribeGlobalChatHeaders.setDestination("/topic/globalchat");
-        subscribeGlobalChatHeaders.add("username", dataController.getUser().getUsername());
+        subscribeGlobalChatHeaders.add("username", userAuthStore.getUser().getUsername());
         session.subscribe(subscribeGlobalChatHeaders, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
@@ -84,7 +92,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
         /* Subscribing to /topic/greetings will trigger an event to STOMP server to send you a greeting */
         StompHeaders subscribeGreetingChatHeaders = new StompHeaders();
         subscribeGreetingChatHeaders.setDestination("/topic/greetings");
-        subscribeGreetingChatHeaders.add("username", dataController.getUser().getUsername());
+        subscribeGreetingChatHeaders.add("username", userAuthStore.getUser().getUsername());
         session.subscribe("/topic/greetings", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
@@ -124,7 +132,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
     @Override
     public void handleFrame(StompHeaders headers, Object payload) {
         Message msg = (Message) payload;
-        logger.info("Received : " + msg.getText() + " from : " + msg.getFrom());
+        logger.info("Received: " + msg.getText() + " from : " + msg.getFrom());
 
     }
 

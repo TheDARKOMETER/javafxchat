@@ -7,14 +7,14 @@ package javachat.controller;
 import java.util.ArrayList;
 import java.util.List;
 import javachat.models.ChatMessage;
-import javachat.dao.TempChatMessageDAO;
-import javachat.dao.ChatMessageDAO;
-import javachat.services.UserService;
+import javachat.dao.ChatMessageHandler;
+import javachat.services.UserAuthStore;
 import javachat.models.User;
 import javachat.views.ChatMessageComponent;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.application.Platform;
+import javachat.dao.IChatMessageHandler;
 
 /**
  *
@@ -22,13 +22,11 @@ import javafx.application.Platform;
  */
 public class DataController {
 
-    private ChatMessageDAO cmd;
+    private IChatMessageHandler cmd;
     private ArrayList<ChatMessageComponent> chatMessageComponents = new ArrayList<>();
-    private UserService userService;
     
-    public DataController(ChatMessageDAO cmd, UserService userService) {
+    public DataController(IChatMessageHandler cmd) {
         this.cmd = cmd;
-        this.userService = userService;
     }
 
     private void createChatMessageComponents(ArrayList<ChatMessage> cmsgs) {
@@ -36,8 +34,6 @@ public class DataController {
             chatMessageComponents.add(new ChatMessageComponent(cmsg));
         }
     }
-    // Render all chat messages
-
 
     public void handleIncomingChatMessage(ChatMessage cmsg, VBox chatStack) {
         cmd.addChatMessage(cmsg);
@@ -54,8 +50,5 @@ public class DataController {
         });
     }
 
-    public User getUser() {
-        return userService.getUser();
-    }
 
 }
