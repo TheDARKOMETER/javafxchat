@@ -156,14 +156,14 @@ public class ChatFrame extends JApplet {
         SplitPane middlePane = new SplitPane();
         MenuBar userMenuBar = new MenuBar();
         Menu menuAuthentication = new Menu("Settings");
-        MenuItem loginMenuItem = new MenuItem("Sign Up");
-        loginMenuItem.setOnAction(e -> {
-            dataLogger.info("Login option clicked");
+        MenuItem signUpMenuItem = new MenuItem("Sign Up");
+        signUpMenuItem.setOnAction(e -> {
+            dataLogger.info("SignUp option clicked");
             SignUp signUp = new SignUp(instance);
             signUp.initSignUpPage();
         });
-        MenuItem signupMenuItem = new MenuItem("Login");
-        menuAuthentication.getItems().addAll(loginMenuItem, signupMenuItem);
+        MenuItem loginMenuItem = new MenuItem("Login");
+        menuAuthentication.getItems().addAll(signUpMenuItem, loginMenuItem);
         userMenuBar.getMenus().add(menuAuthentication);
 
         VBox menuAndHeaderVBox = new VBox();
@@ -363,6 +363,7 @@ public class ChatFrame extends JApplet {
     }
 
     protected void updateUI() throws IllegalStateException {
+        updateUser();
         Platform.runLater(() -> {
             usernameTitle.setText(userService.getUser().getUsername());
             chatScrollPane.setVvalue(1.0);
@@ -379,7 +380,6 @@ public class ChatFrame extends JApplet {
         try {
             session = client.createClient(sharedComponent, chatScrollPane);
             updateUI();
-            updateUser();
         } catch (Exception e) {
             e.printStackTrace();
             // TODO: Add reconnect button to application

@@ -37,7 +37,7 @@ public class SignUp extends JApplet {
     
     private static JFXPanel jfxPanel;
     private static final int JFXPANEL_WIDTH_INT = 380;
-    private static final int JFXPANEL_HEIGHT_INT = 210;
+    private static final int JFXPANEL_HEIGHT_INT = 230;
     private RESTClient restClient = new RESTClient();
     private ChatFrame instance;
     private UserAuthStore userService = UserAuthStore.getInstance();
