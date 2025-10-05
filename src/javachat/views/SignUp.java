@@ -23,6 +23,7 @@ import javax.swing.JFrame;
 import java.util.logging.Logger;
 import javachat.models.User;
 import javachat.services.RESTClient;
+import javachat.services.UIPublisher;
 import javachat.services.UserAuthStore;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -42,7 +43,7 @@ public class SignUp extends JApplet {
     private ChatFrame instance;
     private UserAuthStore userService = UserAuthStore.getInstance();
     private Logger signUpLogger = Logger.getLogger(SignUp.class.getName());
-    
+    private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
     public SignUp(ChatFrame instance) {
         this.instance = instance;
     }
@@ -104,7 +105,7 @@ public class SignUp extends JApplet {
             User response = restClient.signUp(user);
             signUpLogger.info("User posted: " + response.getUsername());
             userService.setUser(response);
-            instance.updateUI();
+            uiPublisher.notifySubscribers();
             if (response != null) {
                 ButtonType signUpButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
                 Dialog<String> successDialog = new Dialog<>();

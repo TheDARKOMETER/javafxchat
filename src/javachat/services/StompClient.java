@@ -40,8 +40,9 @@ public class StompClient {
         WebSocketStompClient stompClient = new WebSocketStompClient(client);
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         StompSessionHandler sessionHandler = new ChatStompSessionHandler(sharedComponent);
-        ListenableFuture<StompSession> session = stompClient.connect(brokerURL, sessionHandler);
+        ListenableFuture<StompSession> session = stompClient.connect(brokerURL + "?isLoggedin=" + String.valueOf(userAuthStore.getIsLoggedIn()), sessionHandler);
         System.out.println("connected to " + brokerURL);
+        
         return session.get();
         //new Scanner(System.in).nextLine(); // Don't close immediately.
     }

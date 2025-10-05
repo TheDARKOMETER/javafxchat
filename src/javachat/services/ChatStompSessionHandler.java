@@ -48,6 +48,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
     private UserAuthStore userAuthStore = UserAuthStore.getInstance();
     private DataController dataController = new DataController(tcmd);
     private Node sharedComponent;
+    private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
 
     public ChatStompSessionHandler(Node sharedComponent) {
         this.sharedComponent = sharedComponent;
@@ -57,11 +58,11 @@ public class ChatStompSessionHandler implements StompSessionHandler {
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
 
         String handshakeUUID = connectedHeaders.getFirst("user-name");
-
         // Guest user when no User persisted/File stored
         userAuthStore.setUser(new User("Guest-" + handshakeUUID, System.currentTimeMillis(), ""));
         logger.info("Setting up user store with username: " + userAuthStore.getUser().getUsername());
         userAuthStore.setSessionUUID(handshakeUUID);
+
         /* Subscribing to /topic/messages will trigger an event to STOMP server to ensure that connection works and that STOMP server can
          receive and format data from client */
         session.subscribe("/topic/messages", this);
@@ -127,6 +128,18 @@ public class ChatStompSessionHandler implements StompSessionHandler {
                 dataController.handleChatMessageHistory((ArrayList<ChatMessage>) chatMessageList, (VBox) sharedComponent);
             }
         });
+        
+        session.subscribe("/user/queue/guest-user", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return User.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            }
+        }) 
     }
 
     @Override
@@ -164,6 +177,10 @@ public class ChatStompSessionHandler implements StompSessionHandler {
         HelloMessage hmsg = new HelloMessage();
         hmsg.setName("vonchez");
         return hmsg;
+    }
+
+    private void updateUserAuthStoreGuest() {
+
     }
 
 }

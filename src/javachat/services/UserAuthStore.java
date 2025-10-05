@@ -14,8 +14,9 @@ import javachat.models.User;
 public class UserAuthStore {
 
     private static UserAuthStore instance;
-    private static User user = new User("", 0, "");
-    // sessionUUID may be treated as JWT in the fture
+    private User user = new User("", 0, "");
+    private boolean isLoggedIn = false;
+// sessionUUID may be treated as JWT in the fture
     private static String sessionUUIDString;
 
     private UserAuthStore() {
@@ -42,6 +43,14 @@ public class UserAuthStore {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean getIsLoggedIn() {
+        return isLoggedIn;
+    }
+
+    public void setIsLoggedIn(boolean isLoggedIn) {
+        this.isLoggedIn = isLoggedIn;
     }
 
 }

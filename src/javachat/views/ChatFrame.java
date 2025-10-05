@@ -56,6 +56,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.messaging.simp.stomp.StompSession;
 import javachat.models.User;
+import javachat.services.UIPublisher;
 import javachat.services.UserAuthStore;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -89,6 +90,7 @@ public class ChatFrame extends JApplet {
     private static JFXPanel fxContainer;
     private ChatFrame instance = this;
     private Text usernameTitle;
+    private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
 
     /**
      * @param args the command line arguments
@@ -119,7 +121,6 @@ public class ChatFrame extends JApplet {
 
                 applet.start();
                 System.out.println("Application Started, intiializing connection for client");
-
                 frame.addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosing(WindowEvent e) {
@@ -133,6 +134,7 @@ public class ChatFrame extends JApplet {
 
     @Override
     public void init() {
+        uiPublisher.subscribe(() -> updateUI());
         fxContainer = new JFXPanel();
         fxContainer.setPreferredSize(new Dimension(JFXPANEL_WIDTH_INT, JFXPANEL_HEIGHT_INT));
         add(fxContainer, BorderLayout.CENTER);
@@ -229,7 +231,7 @@ public class ChatFrame extends JApplet {
         chatStack = new VBox();
         chatScrollPane.setContent(chatStack);
         chatStack.heightProperty().addListener((obs, oldVal, newVal) -> {
-            if (chatScrollPane.getVvalue() >= 0.9) {
+            if (chatScrollPane.getVvalue() >= 0.85) {
                 chatScrollPane.layout();
                 chatScrollPane.setVvalue(1.0);
             }
@@ -363,15 +365,13 @@ public class ChatFrame extends JApplet {
     }
 
     protected void updateUI() throws IllegalStateException {
-        updateUser();
         Platform.runLater(() -> {
+            dataLogger.log(Level.INFO, "UpdateUI called from being notified");
+            user = userService.getUser();
+            //Since usernameTitle is already added with prev value, need to update the value.
             usernameTitle.setText(userService.getUser().getUsername());
             chatScrollPane.setVvalue(1.0);
         });
-    }
-
-    private void updateUser() {
-        user = userService.getUser();
     }
 
     private StompSession initializeSession(Node sharedComponent) {
@@ -379,7 +379,7 @@ public class ChatFrame extends JApplet {
         System.out.println("Creating client");
         try {
             session = client.createClient(sharedComponent, chatScrollPane);
-            updateUI();
+            uiPublisher.notifySubscribers();
         } catch (Exception e) {
             e.printStackTrace();
             // TODO: Add reconnect button to application
