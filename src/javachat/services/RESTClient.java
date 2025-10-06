@@ -4,6 +4,7 @@
  */
 package javachat.services;
 
+import java.util.logging.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestTemplate;
 import javachat.models.User;
@@ -16,6 +17,8 @@ public class RESTClient {
 
     RestTemplate rt = new RestTemplate();
     String userResourceUrl = "http://localhost:8080/jsocketapi/user";
+    Logger logger = Logger.getLogger(RESTClient.class.getName());
+    
     
     public User signUp(User user) {
         HttpEntity<User> request = new HttpEntity<User>(user);
@@ -24,6 +27,7 @@ public class RESTClient {
 
     public User login(User user) {
         HttpEntity<User> request = new HttpEntity<User>(user);
+        logger.info("Posting login request");
         return rt.postForObject(userResourceUrl + "/login", request, User.class);
     }
 }

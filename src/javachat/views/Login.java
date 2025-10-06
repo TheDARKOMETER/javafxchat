@@ -23,6 +23,7 @@ import javax.swing.JFrame;
 import java.util.logging.Logger;
 import javachat.models.User;
 import javachat.services.RESTClient;
+import javachat.services.UIPublisher;
 import javachat.services.UserAuthStore;
 import javafx.scene.control.PasswordField;
 
@@ -37,6 +38,7 @@ public class Login extends JApplet {
     private static final int JFXPANEL_HEIGHT_INT = 210;
     private RESTClient restClient = new RESTClient();
     private UserAuthStore userService = UserAuthStore.getInstance();
+    private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
 
     Logger loginLogger = Logger.getLogger(SignUp.class.getName());
 
@@ -53,7 +55,7 @@ public class Login extends JApplet {
     public void initLoginPage() {
         JApplet applet = new Login();
         applet.init();
-        JFrame frame = new JFrame("Sign Up");
+        JFrame frame = new JFrame("Login");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(applet.getContentPane());
         frame.pack();
@@ -80,11 +82,12 @@ public class Login extends JApplet {
         loginForm.add(passwordLabel, 0, 1);
         loginForm.add(passwordInput, 1, 1);
 
-        Button loginBtn = new Button("Sign Up");
+        Button loginBtn = new Button("Log in");
         loginBtn.setOnAction(e -> {
             User userCredentials = new User(usernameInput.getText(), passwordInput.getText());
             User loginUser = restClient.login(userCredentials);
             userService.setUser(loginUser);
+            uiPublisher.notifySubscribers();
         });
 
         HBox centerHBox = new HBox();

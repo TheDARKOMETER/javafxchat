@@ -10,11 +10,15 @@ package javachat.models;
  */
 public class User {
 
+    private Long id;
     private String username;
     private long createdAt;
     private String email;
     private String password;
     private String role;
+
+    public User() {
+    }
 
     public String getRole() {
         return role;
@@ -24,24 +28,21 @@ public class User {
         this.role = role;
     }
 
-    public User() {
-    }
-
     public User(String username, long createdAt, String email) {
         this.username = username;
         this.createdAt = createdAt;
         this.email = email;
     }
 
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
-
     public User(String username, long createdAt, String email, String password) {
         this.username = username;
         this.createdAt = createdAt;
         this.email = email;
+        this.password = password;
+    }
+
+    public User(String username, String password) {
+        this.username = username;
         this.password = password;
     }
 
@@ -75,6 +76,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

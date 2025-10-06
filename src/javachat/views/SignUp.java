@@ -44,10 +44,7 @@ public class SignUp extends JApplet {
     private UserAuthStore userService = UserAuthStore.getInstance();
     private Logger signUpLogger = Logger.getLogger(SignUp.class.getName());
     private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
-    public SignUp(ChatFrame instance) {
-        this.instance = instance;
-    }
-    
+
     @Override
     public void init() {
         jfxPanel = new JFXPanel();
@@ -59,7 +56,7 @@ public class SignUp extends JApplet {
     }
     
     public void initSignUpPage() {
-        JApplet applet = new SignUp(instance);
+        JApplet applet = new SignUp();
         applet.init();
         JFrame frame = new JFrame("Sign Up");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -122,6 +119,6 @@ public class SignUp extends JApplet {
         centerHBox.setAlignment(Pos.CENTER);
         loginForm.add(centerHBox, 0, 4, 2, 1);
         
-        jfxPanel.setScene(new Scene(loginForm, JFXPANEL_WIDTH_INT, JFXPANEL_HEIGHT_INT));
+        jfxPanel.setScene(new Scene(loginForm));
     }
 }

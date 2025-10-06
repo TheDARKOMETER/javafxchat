@@ -161,10 +161,15 @@ public class ChatFrame extends JApplet {
         MenuItem signUpMenuItem = new MenuItem("Sign Up");
         signUpMenuItem.setOnAction(e -> {
             dataLogger.info("SignUp option clicked");
-            SignUp signUp = new SignUp(instance);
+            SignUp signUp = new SignUp();
             signUp.initSignUpPage();
         });
         MenuItem loginMenuItem = new MenuItem("Login");
+        loginMenuItem.setOnAction(e -> {
+            Login login = new Login();
+            login.initLoginPage();
+        });
+
         menuAuthentication.getItems().addAll(signUpMenuItem, loginMenuItem);
         userMenuBar.getMenus().add(menuAuthentication);
 

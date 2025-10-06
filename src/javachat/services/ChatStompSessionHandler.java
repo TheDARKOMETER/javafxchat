@@ -59,8 +59,8 @@ public class ChatStompSessionHandler implements StompSessionHandler {
 
         String handshakeUUID = connectedHeaders.getFirst("user-name");
         // Guest user when no User persisted/File stored
-        userAuthStore.setUser(new User("Guest-" + handshakeUUID, System.currentTimeMillis(), ""));
-        logger.info("Setting up user store with username: " + userAuthStore.getUser().getUsername());
+//        userAuthStore.setUser(new User("Guest-" + handshakeUUID, System.currentTimeMillis(), ""));
+//        logger.info("Setting up user store with username: " + userAuthStore.getUser().getUsername());
         userAuthStore.setSessionUUID(handshakeUUID);
 
         /* Subscribing to /topic/messages will trigger an event to STOMP server to ensure that connection works and that STOMP server can
@@ -128,18 +128,26 @@ public class ChatStompSessionHandler implements StompSessionHandler {
                 dataController.handleChatMessageHistory((ArrayList<ChatMessage>) chatMessageList, (VBox) sharedComponent);
             }
         });
-        
-        session.subscribe("/user/queue/guest-user", new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return User.class;
-            }
 
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-            }
-        }) 
+        if (!userAuthStore.getIsLoggedIn()) {
+            logger.info("Not logged in, subscribing to guest user channel");
+
+            StompSession.Subscription subscription = session.subscribe("/user/queue/guest-user", new StompFrameHandler() {
+                @Override
+                public Type getPayloadType(StompHeaders headers) {
+                    return User.class;
+                }
+
+                @Override
+                public void handleFrame(StompHeaders headers, Object payload) {
+                    User guestUser = (User) payload;
+                    userAuthStore.setUser(guestUser);
+                    logger.info("Received guest user information WITH ID:  " + guestUser.getId());
+                    uiPublisher.notifySubscribers();
+                }
+            });
+        }
+
     }
 
     @Override
