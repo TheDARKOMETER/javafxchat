@@ -21,6 +21,8 @@ import javafx.scene.layout.VBox;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import java.util.logging.Logger;
+import javachat.models.LoginResponse;
+import javachat.models.SignUpRequest;
 import javachat.models.User;
 import javachat.services.RESTClient;
 import javachat.services.UIPublisher;
@@ -97,9 +99,8 @@ public class SignUp extends JApplet {
         
         Button signUpBtn = new Button("Sign Up");
         signUpBtn.setOnAction(e -> {
-            User user = new User(usernameInput.getText(), System.currentTimeMillis(), emailInput.getText(), passwordInput.getText());
             signUpLogger.info("Attempting to sign up: " + usernameInput.getText() + " " + passwordInput.getText());
-            User response = restClient.signUp(user);
+            User response = restClient.signUp(new SignUpRequest(usernameInput.getText(), passwordInput.getText()));
             signUpLogger.info("User posted: " + response.getUsername());
             userService.setUser(response);
             uiPublisher.notifySubscribers();

@@ -5,6 +5,9 @@
 package javachat.services;
 
 import java.util.logging.Logger;
+import javachat.models.LoginRequest;
+import javachat.models.LoginResponse;
+import javachat.models.SignUpRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestTemplate;
 import javachat.models.User;
@@ -20,13 +23,13 @@ public class RESTClient {
     Logger logger = Logger.getLogger(RESTClient.class.getName());
     
     
-    public User signUp(User user) {
-        HttpEntity<User> request = new HttpEntity<User>(user);
+    public User signUp(SignUpRequest signUpRequest) {
+        HttpEntity<SignUpRequest> request = new HttpEntity<SignUpRequest>(signUpRequest);
         return rt.postForObject(userResourceUrl + "/signup", request, User.class);
     }
 
-    public User login(User user) {
-        HttpEntity<User> request = new HttpEntity<User>(user);
+    public User login(LoginRequest loginRequest) {
+        HttpEntity<LoginRequest> request = new HttpEntity<LoginRequest>(loginRequest);
         logger.info("Posting login request");
         return rt.postForObject(userResourceUrl + "/login", request, User.class);
     }

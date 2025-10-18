@@ -4,11 +4,11 @@
  */
 package javachat.models;
 
-/**
- *
- * @author Administrator
+/*
+ * DTO for sending user info to the client after login/signup.
+ * Does NOT expose sensitive fields like password.
  */
-public class User {
+public class LoginResponse {
 
     private Long id;
     private String username;
@@ -16,16 +16,16 @@ public class User {
     private String email;
     private String role;
 
-    public User() {
+    public LoginResponse() {
     }
 
-    public User(String username, long createdAt, String email) {
+    public LoginResponse(String username, long createdAt, String email, String role) {
         this.username = username;
         this.createdAt = createdAt;
         this.email = email;
+        this.role = role;
     }
-
- 
+    
     public String getUsername() {
         return username;
     }
