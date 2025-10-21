@@ -8,18 +8,18 @@ import java.util.ArrayList;
 import java.util.UUID;
 import javachat.exceptions.ChatMessageException;
 import javachat.models.ChatMessage;
-import javachat.services.TempChatService;
+import javachat.services.ChatService;
 
 /**
  *
  * @author thebe
  */
-public class TempChatMessageDAO implements ChatMessageDAO {
+public class ChatMessageHandler implements IChatMessageHandler {
 
-    private TempChatService tcs = TempChatService.getInstance();
-    private static TempChatMessageDAO instance;
+    private ChatService tcs = ChatService.getInstance();
+    private static ChatMessageHandler instance;
     
-    private TempChatMessageDAO() {}
+    private ChatMessageHandler() {}
 
     @Override
     public ChatMessage getChatMessage(UUID uuid) throws ChatMessageException {
@@ -42,9 +42,9 @@ public class TempChatMessageDAO implements ChatMessageDAO {
     }
     
     
-    public static synchronized TempChatMessageDAO getInstance() {
+    public static synchronized ChatMessageHandler getInstance() {
         if (instance == null) {
-            instance = new TempChatMessageDAO();
+            instance = new ChatMessageHandler();
         }
         return instance;
     }

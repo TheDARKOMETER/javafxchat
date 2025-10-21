@@ -4,32 +4,31 @@
  */
 package javachat.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  *
  * @author Administrator
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 
+    private Long id;
     private String username;
     private long createdAt;
     private String email;
-    private String password;
-    
-    public User() {}
-    
+    private String role;
+
+    public User() {
+    }
+
     public User(String username, long createdAt, String email) {
         this.username = username;
         this.createdAt = createdAt;
         this.email = email;
     }
-    
-    public User(String username, long createdAt, String email, String password) {
-        this.username = username;
-        this.createdAt = createdAt;
-        this.email = email;
-        this.password = password;
-    }
 
+ 
     public String getUsername() {
         return username;
     }
@@ -52,6 +51,22 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
 }

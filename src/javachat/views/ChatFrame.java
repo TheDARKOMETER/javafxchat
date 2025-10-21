@@ -21,6 +21,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import java.awt.Desktop;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -46,15 +48,16 @@ import javafx.scene.text.TextAlignment;
 import javachat.controller.DataController;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
-
-import javachat.dao.TempChatMessageDAO;
+import javachat.dao.ChatMessageHandler;
 import javachat.models.ChatMessage;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.messaging.simp.stomp.StompSession;
 import javachat.models.User;
-import javachat.services.UserService;
+import javachat.services.UIPublisher;
+import javachat.services.UserAuthStore;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -74,17 +77,20 @@ public class ChatFrame extends JApplet {
     private static final int JFXPANEL_WIDTH_INT = 900;
     private static final int JFXPANEL_HEIGHT_INT = 750;
     private static ArrayList<ChatMessageComponent> allChatMessages;
-    private TempChatMessageDAO tcmd = TempChatMessageDAO.getInstance();
-    private UserService userService = UserService.getInstance();
-    private DataController dataController = new DataController(tcmd, userService);
+    private ChatMessageHandler tcmd = ChatMessageHandler.getInstance();
+    private UserAuthStore userService = UserAuthStore.getInstance();
+    private DataController dataController = new DataController(tcmd);
     private VBox chatStack;
     private VBox slidingMenu;
     private ScrollPane chatScrollPane;
     private static Logger dataLogger = Logger.getLogger(ChatFrame.class.getName());
     private StompSession stompSession;
-    private User tempUser = new User("Vonchez", System.currentTimeMillis(), "kek@kek.com");
+    private User user;
     private static StompClient client = new StompClient("ws://localhost:8080/jsocketapi/javafxchat");
     private static JFXPanel fxContainer;
+    private ChatFrame instance = this;
+    private Text usernameTitle;
+    private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
 
     /**
      * @param args the command line arguments
@@ -98,6 +104,7 @@ public class ChatFrame extends JApplet {
                 try {
                     UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
                 } catch (Exception e) {
+                    dataLogger.log(Level.WARNING, e.getMessage());
                 }
 
                 JFrame frame = new JFrame("JavaFX 2 in Swing");
@@ -114,12 +121,20 @@ public class ChatFrame extends JApplet {
 
                 applet.start();
                 System.out.println("Application Started, intiializing connection for client");
+                frame.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        applet.stop();
+                        applet.destroy();
+                    }
+                });
             }
         });
     }
 
     @Override
     public void init() {
+        uiPublisher.subscribe(() -> updateUI());
         fxContainer = new JFXPanel();
         fxContainer.setPreferredSize(new Dimension(JFXPANEL_WIDTH_INT, JFXPANEL_HEIGHT_INT));
         add(fxContainer, BorderLayout.CENTER);
@@ -143,14 +158,19 @@ public class ChatFrame extends JApplet {
         SplitPane middlePane = new SplitPane();
         MenuBar userMenuBar = new MenuBar();
         Menu menuAuthentication = new Menu("Settings");
+        MenuItem signUpMenuItem = new MenuItem("Sign Up");
+        signUpMenuItem.setOnAction(e -> {
+            dataLogger.info("SignUp option clicked");
+            SignUp signUp = new SignUp();
+            signUp.initSignUpPage();
+        });
         MenuItem loginMenuItem = new MenuItem("Login");
         loginMenuItem.setOnAction(e -> {
-            dataLogger.info("Login option clicked");
-            SignUp signUp = new SignUp();
-            signUp.init();
+            Login login = new Login();
+            login.initLoginPage();
         });
-        MenuItem signupMenuItem = new MenuItem("Sign Up");
-        menuAuthentication.getItems().addAll(loginMenuItem, signupMenuItem);
+
+        menuAuthentication.getItems().addAll(signUpMenuItem, loginMenuItem);
         userMenuBar.getMenus().add(menuAuthentication);
 
         VBox menuAndHeaderVBox = new VBox();
@@ -166,7 +186,11 @@ public class ChatFrame extends JApplet {
 
         Region spacer = new Region();
         StackPane settingsStack = new StackPane();
+        HBox userDetailsSettingsContainer = new HBox();
         Text settingsUnicode = new Text("☰");
+        usernameTitle = new Text(userService.getUser().getUsername());
+        usernameTitle.setFill(Color.WHITE);
+        userDetailsSettingsContainer.setAlignment(Pos.BASELINE_CENTER);
         settingsUnicode.setFont(Font.font("Arial", FontWeight.BOLD, 18));
         settingsUnicode.setFill(Color.WHITE);
         settingsStack.setAlignment(Pos.CENTER_RIGHT);
@@ -190,9 +214,9 @@ public class ChatFrame extends JApplet {
         settingsButton.setOnMouseExited(e -> {
             settingsButton.setEffect(null);
         });
-
+        userDetailsSettingsContainer.getChildren().addAll(usernameTitle, settingsButton);
         headerHBox.setAlignment(Pos.CENTER_LEFT);
-        headerHBox.getChildren().addAll(title, spacer, settingsButton);
+        headerHBox.getChildren().addAll(title, spacer, userDetailsSettingsContainer);
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         VBox userList = new VBox();
@@ -212,7 +236,10 @@ public class ChatFrame extends JApplet {
         chatStack = new VBox();
         chatScrollPane.setContent(chatStack);
         chatStack.heightProperty().addListener((obs, oldVal, newVal) -> {
-            chatScrollPane.setVvalue(1.0);
+            if (chatScrollPane.getVvalue() >= 0.85) {
+                chatScrollPane.layout();
+                chatScrollPane.setVvalue(1.0);
+            }
         });
 //        if (allChatMessages.size() > 0) {
 //            dataLogger.info("First chat message content is: " + allChatMessages.get(0).getMessage());
@@ -233,7 +260,8 @@ public class ChatFrame extends JApplet {
         sendBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                stompSession.send("/app/globalchat", new ChatMessage(chatInputTxt.getText(), System.currentTimeMillis(), tempUser, 0, 0, UUID.randomUUID()));
+                dataLogger.info("Username: " + user.getUsername());
+                stompSession.send("/app/globalchat", new ChatMessage(chatInputTxt.getText(), System.currentTimeMillis(), user, 0, 0, UUID.randomUUID()));
                 chatInputTxt.clear();
             }
         });
@@ -341,13 +369,25 @@ public class ChatFrame extends JApplet {
 
     }
 
+    protected void updateUI() throws IllegalStateException {
+        Platform.runLater(() -> {
+            dataLogger.log(Level.INFO, "UpdateUI called from being notified");
+            user = userService.getUser();
+            //Since usernameTitle is already added with prev value, need to update the value.
+            usernameTitle.setText(userService.getUser().getUsername());
+            chatScrollPane.setVvalue(1.0);
+        });
+    }
+
     private StompSession initializeSession(Node sharedComponent) {
         StompSession session = null;
         System.out.println("Creating client");
         try {
             session = client.createClient(sharedComponent, chatScrollPane);
+            uiPublisher.notifySubscribers();
         } catch (Exception e) {
             e.printStackTrace();
+            // TODO: Add reconnect button to application
         }
         return session;
     }
