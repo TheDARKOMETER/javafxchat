@@ -6,7 +6,6 @@ package javachat.services;
 
 import java.util.logging.Logger;
 import javachat.models.LoginRequest;
-import javachat.models.LoginResponse;
 import javachat.models.SignUpRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestTemplate;

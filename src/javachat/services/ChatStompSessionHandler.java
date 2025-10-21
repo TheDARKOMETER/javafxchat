@@ -18,9 +18,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import java.util.logging.Level;
 import org.springframework.lang.Nullable;
-import javachat.shared.HelloMessage;
 import java.util.logging.Logger;
-import javachat.shared.Greeting;
 import java.lang.reflect.Type;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -58,17 +56,12 @@ public class ChatStompSessionHandler implements StompSessionHandler {
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
 
         String handshakeUUID = connectedHeaders.getFirst("user-name");
-        // Guest user when no User persisted/File stored
-//        userAuthStore.setUser(new User("Guest-" + handshakeUUID, System.currentTimeMillis(), ""));
-//        logger.info("Setting up user store with username: " + userAuthStore.getUser().getUsername());
         userAuthStore.setSessionUUID(handshakeUUID);
 
         /* Subscribing to /topic/messages will trigger an event to STOMP server to ensure that connection works and that STOMP server can
          receive and format data from client */
         session.subscribe("/topic/messages", this);
 
-        logger.info("Subscribed to /topic/greetings, sending a message with content " + getSampleMessage().getText());
-        session.send("/app/chat", getHelloMessage());
 
         /* Subscribe to global chat */
         StompHeaders subscribeGlobalChatHeaders = new StompHeaders();
@@ -131,7 +124,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
 
         if (!userAuthStore.getIsLoggedIn()) {
             logger.info("Not logged in, subscribing to guest user channel");
-
+       
             StompSession.Subscription subscription = session.subscribe("/user/queue/guest-user", new StompFrameHandler() {
                 @Override
                 public Type getPayloadType(StompHeaders headers) {
@@ -145,7 +138,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
                     logger.info("Received guest user information WITH ID:  " + guestUser.getId());
                     uiPublisher.notifySubscribers();
                 }
-            });
+           });
         }
 
     }
@@ -174,21 +167,6 @@ public class ChatStompSessionHandler implements StompSessionHandler {
         return Message.class;
     }
 
-    private Message getSampleMessage() {
-        Message msg = new Message();
-        msg.setFrom("Nicky");
-        msg.setText("Howdy!!");
-        return msg;
-    }
 
-    private HelloMessage getHelloMessage() {
-        HelloMessage hmsg = new HelloMessage();
-        hmsg.setName("vonchez");
-        return hmsg;
-    }
-
-    private void updateUserAuthStoreGuest() {
-
-    }
 
 }

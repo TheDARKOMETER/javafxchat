@@ -21,7 +21,6 @@ import javafx.scene.layout.VBox;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import java.util.logging.Logger;
-import javachat.models.LoginResponse;
 import javachat.models.SignUpRequest;
 import javachat.models.User;
 import javachat.services.RESTClient;

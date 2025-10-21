@@ -4,10 +4,13 @@
  */
 package javachat.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  *
  * @author Administrator
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 
     private Long id;
