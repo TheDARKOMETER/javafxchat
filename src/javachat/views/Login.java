@@ -21,7 +21,9 @@ import javafx.scene.layout.VBox;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import java.util.logging.Logger;
+import javachat.interfaces.UserIdentifiable;
 import javachat.models.LoginRequest;
+import javachat.models.LoginResponse;
 import javachat.models.User;
 import javachat.services.RESTClient;
 import javachat.services.UIPublisher;
@@ -85,8 +87,8 @@ public class Login extends JApplet {
 
         Button loginBtn = new Button("Log in");
         loginBtn.setOnAction(e -> {
-            User loginUser = restClient.login(new LoginRequest(usernameInput.getText(), passwordInput.getText()));
-            userService.setUser(loginUser);
+            LoginResponse loginUser = restClient.login(new LoginRequest(usernameInput.getText(), passwordInput.getText()));
+            userService.setUser((UserIdentifiable) loginUser);
             uiPublisher.notifySubscribers();
         });
 

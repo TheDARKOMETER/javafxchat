@@ -5,6 +5,7 @@
 package javachat.services;
 
 import java.util.UUID;
+import javachat.interfaces.UserIdentifiable;
 import javachat.models.User;
 
 /**
@@ -41,8 +42,8 @@ public class UserAuthStore {
         this.sessionUUIDString = sessionUUIDString;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(UserIdentifiable user) {
+        this.user = new User(user.getId(),user.getUsername(), user.getEmail(), user.getRole());
     }
 
     public boolean getIsLoggedIn() {

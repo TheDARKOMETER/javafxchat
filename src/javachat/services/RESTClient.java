@@ -10,6 +10,7 @@ import javachat.models.SignUpRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestTemplate;
 import javachat.models.User;
+import javachat.models.LoginResponse;
 
 /**
  *
@@ -22,14 +23,14 @@ public class RESTClient {
     Logger logger = Logger.getLogger(RESTClient.class.getName());
     
     
-    public User signUp(SignUpRequest signUpRequest) {
+    public LoginResponse signUp(SignUpRequest signUpRequest) throws  Exception {
         HttpEntity<SignUpRequest> request = new HttpEntity<SignUpRequest>(signUpRequest);
-        return rt.postForObject(userResourceUrl + "/signup", request, User.class);
+        return rt.postForObject(userResourceUrl + "/signup", request, LoginResponse.class);
     }
 
-    public User login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         HttpEntity<LoginRequest> request = new HttpEntity<LoginRequest>(loginRequest);
         logger.info("Posting login request");
-        return rt.postForObject(userResourceUrl + "/login", request, User.class);
+        return rt.postForObject(userResourceUrl + "/login", request, LoginResponse.class);
     }
 }

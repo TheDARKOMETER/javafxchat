@@ -6,6 +6,7 @@ package javachat.views;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Insets;
@@ -21,6 +22,8 @@ import javafx.scene.layout.VBox;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import java.util.logging.Logger;
+import javachat.interfaces.UserIdentifiable;
+import javachat.models.LoginResponse;
 import javachat.models.SignUpRequest;
 import javachat.models.User;
 import javachat.services.RESTClient;
@@ -29,6 +32,8 @@ import javachat.services.UserAuthStore;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.PasswordField;
 
 /**
@@ -36,7 +41,7 @@ import javafx.scene.control.PasswordField;
  * @author thebe
  */
 public class SignUp extends JApplet {
-    
+
     private static JFXPanel jfxPanel;
     private static final int JFXPANEL_WIDTH_INT = 380;
     private static final int JFXPANEL_HEIGHT_INT = 230;
@@ -55,7 +60,7 @@ public class SignUp extends JApplet {
             createScene();
         });
     }
-    
+
     public void initSignUpPage() {
         JApplet applet = new SignUp();
         applet.init();
@@ -67,58 +72,69 @@ public class SignUp extends JApplet {
         frame.setVisible(true);
         applet.start();
     }
-    
+
     private void createScene() {
-        
+
         GridPane loginForm = new GridPane();
         loginForm.setAlignment(Pos.CENTER);
         loginForm.setHgap(10);
         loginForm.setVgap(10);
         loginForm.setPadding(new Insets(25, 25, 25, 25));
-        
+
         Label usernameLabel = new Label("Username: ");
         TextField usernameInput = new TextField();
         loginForm.add(usernameLabel, 0, 0);
         loginForm.add(usernameInput, 1, 0);
-        
+
         Label emailLabel = new Label("Email: ");
         TextField emailInput = new TextField();
         loginForm.add(emailLabel, 0, 1);
         loginForm.add(emailInput, 1, 1);
-        
+
         Label passwordLabel = new Label("Password: ");
         PasswordField passwordInput = new PasswordField();
         loginForm.add(passwordLabel, 0, 2);
         loginForm.add(passwordInput, 1, 2);
-        
+
         Label confirmPasswordLabel = new Label("Confirm Password: ");
         PasswordField confirmPasswordInput = new PasswordField();
         loginForm.add(confirmPasswordLabel, 0, 3);
         loginForm.add(confirmPasswordInput, 1, 3);
-        
+
         Button signUpBtn = new Button("Sign Up");
         signUpBtn.setOnAction(e -> {
-            signUpLogger.info("Attempting to sign up: " + usernameInput.getText() + " " + passwordInput.getText());
-            User response = restClient.signUp(new SignUpRequest(usernameInput.getText(), passwordInput.getText()));
-            signUpLogger.info("User posted: " + response.getUsername());
-            userService.setUser(response);
-            uiPublisher.notifySubscribers();
-            if (response != null) {
-                ButtonType signUpButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
-                Dialog<String> successDialog = new Dialog<>();
-                successDialog.getDialogPane().setContentText("You have successfully signed up.");
-                successDialog.getDialogPane().getButtonTypes().add(signUpButtonType);
-                successDialog.getDialogPane().lookupButton(signUpButtonType).setDisable(false);
-                successDialog.show();
+            signUpLogger.info("Attempting to sign up: " + usernameInput.getText() + " " + passwordInput.getText() + " " + emailInput.getText());
+            try {
+                LoginResponse response = restClient.signUp(new SignUpRequest(usernameInput.getText(), passwordInput.getText(), emailInput.getText()));
+                signUpLogger.info("User posted: " + response.getUsername());
+                signUpLogger.log(Level.INFO, "User id: " + response.getId());
+                signUpLogger.log(Level.INFO, "User email: " + response.getEmail());
+
+                userService.setUser((UserIdentifiable) response);
+                uiPublisher.notifySubscribers();
+                if (response != null) {
+                    ButtonType signUpButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
+                    Dialog<String> successDialog = new Dialog<>();
+                    successDialog.getDialogPane().setContentText("You have successfully signed up.");
+                    successDialog.getDialogPane().getButtonTypes().add(signUpButtonType);
+                    successDialog.getDialogPane().lookupButton(signUpButtonType).setDisable(false);
+                    successDialog.show();
+                }
+            } catch (Exception ex) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Something went wrong!");
+                signUpLogger.severe(ex.getMessage());
+                ex.printStackTrace();
+                alert.showAndWait();
             }
-            
         });
-        
+
         HBox centerHBox = new HBox();
         centerHBox.getChildren().add(signUpBtn);
         centerHBox.setAlignment(Pos.CENTER);
         loginForm.add(centerHBox, 0, 4, 2, 1);
-        
+
         jfxPanel.setScene(new Scene(loginForm));
     }
 }

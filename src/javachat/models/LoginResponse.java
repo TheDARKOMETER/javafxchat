@@ -4,53 +4,35 @@
  */
 package javachat.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javachat.interfaces.UserIdentifiable;
 
 /**
  *
- * @author Administrator
+ * @author thebe
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class User implements UserIdentifiable {
+public class LoginResponse implements UserIdentifiable {
 
     private Long id;
     private String username;
-    private long createdAt;
     private String email;
     private String role;
 
-    public User() {
+    public LoginResponse() {
     }
 
-    public User(String username, long createdAt, String email) {
+    public LoginResponse(String username, Long id, String email, String role) {
         this.username = username;
-        this.createdAt = createdAt;
-        this.email = email;
-    }
-    
-    public User(Long id, String username, String email, String role) {
         this.id = id;
-        this.username = username;
         this.email = email;
         this.role = role;
     }
-
- 
+    
     public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public long getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(long createdAt) {
-        this.createdAt = createdAt;
     }
 
     public String getEmail() {

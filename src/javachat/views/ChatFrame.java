@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javachat.interfaces.UserIdentifiable;
 import org.springframework.messaging.simp.stomp.StompSession;
 import javachat.models.User;
 import javachat.services.UIPublisher;

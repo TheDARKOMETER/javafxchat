@@ -11,6 +11,7 @@ import javachat.models.User;
 /**
  *
  * @author thebe
+ * Observer Class
  */
 public class UIPublisher {
     private static UIPublisher instance;

@@ -6,6 +6,7 @@ package javachat.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.UUID;
+import javachat.interfaces.UserIdentifiable;
 
 /**
  *
@@ -41,7 +42,7 @@ public class ChatMessage {
         return timestamp;
     }
 
-    public User getAuthor() {
+    public UserIdentifiable getAuthor() {
         return author;
     }
 
