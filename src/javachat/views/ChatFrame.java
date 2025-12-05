@@ -61,6 +61,7 @@ import javachat.services.UIPublisher;
 import javachat.services.UserAuthStore;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.Menu;
@@ -92,7 +93,9 @@ public class ChatFrame extends JApplet {
     private ChatFrame instance = this;
     private Text usernameTitle;
     private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
+    private Menu menuAuthentication;
 
+    
     /**
      * @param args the command line arguments
      */
@@ -158,7 +161,7 @@ public class ChatFrame extends JApplet {
         BorderPane root = new BorderPane();
         SplitPane middlePane = new SplitPane();
         MenuBar userMenuBar = new MenuBar();
-        Menu menuAuthentication = new Menu("Settings");
+        menuAuthentication = new Menu("Settings");
         MenuItem signUpMenuItem = new MenuItem("Sign Up");
         signUpMenuItem.setOnAction(e -> {
             dataLogger.info("SignUp option clicked");
@@ -377,6 +380,22 @@ public class ChatFrame extends JApplet {
             //Since usernameTitle is already added with prev value, need to update the value.
             usernameTitle.setText(userService.getUser().getUsername());
             chatScrollPane.setVvalue(1.0);
+            
+            if (userService.getIsLoggedIn()) {
+                dataLogger.info("user is logged in");
+                MenuItem logOutItem = new MenuItem("Logout");
+                logOutItem.setOnAction(e -> {
+                    userService.logout();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Logged Out");
+                    alert.setHeaderText("You are now logged out");
+                    alert.show();
+                    stompSession.send("/app/guest", null);
+                    uiPublisher.notifySubscribers();
+                });
+                menuAuthentication.getItems().clear();
+                menuAuthentication.getItems().add(logOutItem);
+            }
         });
     }
 

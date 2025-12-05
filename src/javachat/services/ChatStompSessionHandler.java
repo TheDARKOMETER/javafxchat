@@ -57,7 +57,8 @@ public class ChatStompSessionHandler implements StompSessionHandler {
 
         String handshakeUUID = connectedHeaders.getFirst("user-name");
         userAuthStore.setSessionUUID(handshakeUUID);
-
+        logger.info(">>> HS UUID: " + handshakeUUID);
+        
         /* Subscribing to /topic/messages will trigger an event to STOMP server to ensure that connection works and that STOMP server can
          receive and format data from client */
         session.subscribe("/topic/messages", this);
@@ -124,7 +125,6 @@ public class ChatStompSessionHandler implements StompSessionHandler {
 
         if (!userAuthStore.getIsLoggedIn()) {
             logger.info("Not logged in, subscribing to guest user channel");
-       
             StompSession.Subscription subscription = session.subscribe("/user/queue/guest-user", new StompFrameHandler() {
                 @Override
                 public Type getPayloadType(StompHeaders headers) {

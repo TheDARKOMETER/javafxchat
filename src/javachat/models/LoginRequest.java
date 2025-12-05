@@ -14,7 +14,7 @@ public class LoginRequest {
     private String password;
     private String username;
 
-    public LoginRequest(String password, String username) {
+    public LoginRequest(String username, String password) {
         this.password = password;
         this.username = username;
     }

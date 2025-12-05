@@ -50,6 +50,7 @@ public class SignUp extends JApplet {
     private UserAuthStore userService = UserAuthStore.getInstance();
     private Logger signUpLogger = Logger.getLogger(SignUp.class.getName());
     private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
+    private JFrame frame;
 
     @Override
     public void init() {
@@ -61,10 +62,11 @@ public class SignUp extends JApplet {
         });
     }
 
+    // Called by Main Frame
     public void initSignUpPage() {
-        JApplet applet = new SignUp();
+        SignUp applet = this;
         applet.init();
-        JFrame frame = new JFrame("Sign Up");
+        frame = new JFrame("Sign Up");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(applet.getContentPane());
         frame.pack();
@@ -105,12 +107,19 @@ public class SignUp extends JApplet {
         signUpBtn.setOnAction(e -> {
             signUpLogger.info("Attempting to sign up: " + usernameInput.getText() + " " + passwordInput.getText() + " " + emailInput.getText());
             try {
+
+                usernameInput.setDisable(true);
+                passwordInput.setDisable(true);
+                emailInput.setDisable(true);
+                confirmPasswordInput.setDisable(true);
+                signUpBtn.setDisable(true);
+
                 LoginResponse response = restClient.signUp(new SignUpRequest(usernameInput.getText(), passwordInput.getText(), emailInput.getText()));
                 signUpLogger.info("User posted: " + response.getUsername());
                 signUpLogger.log(Level.INFO, "User id: " + response.getId());
                 signUpLogger.log(Level.INFO, "User email: " + response.getEmail());
 
-                userService.setUser((UserIdentifiable) response);
+                userService.login((UserIdentifiable) response);
                 uiPublisher.notifySubscribers();
                 if (response != null) {
                     ButtonType signUpButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
@@ -119,6 +128,13 @@ public class SignUp extends JApplet {
                     successDialog.getDialogPane().getButtonTypes().add(signUpButtonType);
                     successDialog.getDialogPane().lookupButton(signUpButtonType).setDisable(false);
                     successDialog.show();
+                    successDialog.setResultConverter(button -> {
+                        if (button == signUpButtonType) {
+                            successDialog.close();
+                            frame.dispose();
+                        }
+                        return null;
+                    });
                 }
             } catch (Exception ex) {
                 Alert alert = new Alert(AlertType.ERROR);
@@ -127,6 +143,11 @@ public class SignUp extends JApplet {
                 signUpLogger.severe(ex.getMessage());
                 ex.printStackTrace();
                 alert.showAndWait();
+                usernameInput.setDisable(false);
+                passwordInput.setDisable(false);
+                emailInput.setDisable(false);
+                confirmPasswordInput.setDisable(false);
+                signUpBtn.setDisable(false);
             }
         });
 

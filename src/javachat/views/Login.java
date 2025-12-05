@@ -28,6 +28,10 @@ import javachat.models.User;
 import javachat.services.RESTClient;
 import javachat.services.UIPublisher;
 import javachat.services.UserAuthStore;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.PasswordField;
 
 /**
@@ -42,7 +46,7 @@ public class Login extends JApplet {
     private RESTClient restClient = new RESTClient();
     private UserAuthStore userService = UserAuthStore.getInstance();
     private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
-
+    private JFrame frame;
     Logger loginLogger = Logger.getLogger(SignUp.class.getName());
 
     @Override
@@ -56,9 +60,9 @@ public class Login extends JApplet {
     }
 
     public void initLoginPage() {
-        JApplet applet = new Login();
+        JApplet applet = this;
         applet.init();
-        JFrame frame = new JFrame("Login");
+        frame = new JFrame("Login");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(applet.getContentPane());
         frame.pack();
@@ -87,9 +91,42 @@ public class Login extends JApplet {
 
         Button loginBtn = new Button("Log in");
         loginBtn.setOnAction(e -> {
-            LoginResponse loginUser = restClient.login(new LoginRequest(usernameInput.getText(), passwordInput.getText()));
-            userService.setUser((UserIdentifiable) loginUser);
-            uiPublisher.notifySubscribers();
+            try {
+                loginBtn.setDisable(true);
+                usernameInput.setDisable(true);
+                passwordInput.setDisable(true);
+                LoginResponse loginUser = restClient.login(new LoginRequest(usernameInput.getText(), passwordInput.getText()));
+                if (loginUser != null) {
+
+                    userService.login((UserIdentifiable) loginUser);
+                    uiPublisher.notifySubscribers();
+                    ButtonType loginButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
+                    Dialog<String> successDialog = new Dialog<>();
+                    successDialog.getDialogPane().getButtonTypes().add(loginButtonType);
+                    successDialog.getDialogPane().lookupButton(loginButtonType).setDisable(false);
+                    successDialog.getDialogPane().setContentText("You are now logged in");
+                    successDialog.show();
+                    successDialog.setResultConverter(button -> {
+                        if (button == loginButtonType) {
+                            successDialog.close();
+                            frame.dispose();
+                        }
+                        return null;
+                    });
+
+                }
+            } catch (Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Problem with Login");
+                alert.setHeaderText("Something went wrong");
+                loginLogger.severe(ex.getMessage());
+                ex.printStackTrace();
+                alert.showAndWait();
+                loginBtn.setDisable(false);
+                usernameInput.setDisable(false);
+                passwordInput.setDisable(false);
+
+            }
         });
 
         HBox centerHBox = new HBox();

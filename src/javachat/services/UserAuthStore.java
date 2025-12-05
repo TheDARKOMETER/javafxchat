@@ -43,7 +43,7 @@ public class UserAuthStore {
     }
 
     public void setUser(UserIdentifiable user) {
-        this.user = new User(user.getId(),user.getUsername(), user.getEmail(), user.getRole());
+        this.user = new User(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
 
     public boolean getIsLoggedIn() {
@@ -52,6 +52,17 @@ public class UserAuthStore {
 
     public void setIsLoggedIn(boolean isLoggedIn) {
         this.isLoggedIn = isLoggedIn;
+    }
+
+    public void login(UserIdentifiable user) {
+        isLoggedIn = true;
+        this.user = new User(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
+    }
+
+    public void logout() {
+        this.user = new User("", 0, "");
+        this.sessionUUIDString = null;
+        this.isLoggedIn = false;
     }
 
 }
