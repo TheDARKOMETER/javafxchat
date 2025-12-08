@@ -45,7 +45,7 @@ import javax.swing.UIManager;
 import javachat.views.SignUp;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javachat.controller.DataController;
+import javachat.controller.ChatMessageDataController;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
 import javachat.dao.ChatMessageHandler;
@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javachat.controller.DataController;
 import javachat.interfaces.UserIdentifiable;
 import org.springframework.messaging.simp.stomp.StompSession;
 import javachat.models.User;
@@ -81,7 +82,8 @@ public class ChatFrame extends JApplet {
     private static ArrayList<ChatMessageComponent> allChatMessages;
     private ChatMessageHandler tcmd = ChatMessageHandler.getInstance();
     private UserAuthStore userService = UserAuthStore.getInstance();
-    private DataController dataController = new DataController(tcmd);
+    private DataController dataController = DataController.getInstance();
+    private ChatMessageDataController chatMessageDataController = new ChatMessageDataController(tcmd);
     private VBox chatStack;
     private VBox slidingMenu;
     private ScrollPane chatScrollPane;
@@ -94,8 +96,10 @@ public class ChatFrame extends JApplet {
     private Text usernameTitle;
     private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
     private Menu menuAuthentication;
+    private Text ulLabel;
+    private VBox userListWrapper;
+    private VBox userList;
 
-    
     /**
      * @param args the command line arguments
      */
@@ -223,15 +227,16 @@ public class ChatFrame extends JApplet {
         headerHBox.getChildren().addAll(title, spacer, userDetailsSettingsContainer);
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        VBox userList = new VBox();
-        userList.setAlignment(Pos.BASELINE_CENTER);
-        userList.setPadding(new Insets(15, 12, 15, 12));
-        Text ulLabel = new Text("Users:");
+        userListWrapper = new VBox();
+        userList = new VBox();
+        userListWrapper.setAlignment(Pos.TOP_CENTER);
+        userListWrapper.setPadding(new Insets(15, 12, 0, 12));
+        ulLabel = new Text("Users:");
         ulLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
-        userList.getChildren().add(ulLabel);
-        userList.setMaxWidth(120);
-        userList.setStyle("-fx-background-color:white;");
-
+        userListWrapper.getChildren().add(ulLabel);
+        userListWrapper.setMaxWidth(120);
+        userListWrapper.setStyle("-fx-background-color:white;");
+        userListWrapper.getChildren().add(userList);
         // Demo Code to see if retrieving is possible
         //allChatMessages = dataController.getChatMessagesToRender();
         // Chat Messages
@@ -251,7 +256,7 @@ public class ChatFrame extends JApplet {
 //        }
 
         // Add ChatMessage and userList to SplitPane
-        middlePane.getItems().addAll(userList, chatScrollPane);
+        middlePane.getItems().addAll(userListWrapper, chatScrollPane);
         middlePane.setOrientation(Orientation.HORIZONTAL);
         middlePane.setDividerPositions(1d);
 
@@ -380,7 +385,7 @@ public class ChatFrame extends JApplet {
             //Since usernameTitle is already added with prev value, need to update the value.
             usernameTitle.setText(userService.getUser().getUsername());
             chatScrollPane.setVvalue(1.0);
-            
+
             if (userService.getIsLoggedIn()) {
                 dataLogger.info("user is logged in");
                 MenuItem logOutItem = new MenuItem("Logout");
@@ -395,6 +400,14 @@ public class ChatFrame extends JApplet {
                 });
                 menuAuthentication.getItems().clear();
                 menuAuthentication.getItems().add(logOutItem);
+            }
+            ulLabel.setText("Users " + "(" + dataController.getOnlineUsersCount() + ") :");
+            userList.getChildren().clear();
+            if (dataController.getOnlineUsernames() != null) {
+                for (String username : dataController.getOnlineUsernames()) {
+                    dataLogger.info("Adding username: " + username);
+                    userList.getChildren().add(new Label(username));
+                }
             }
         });
     }

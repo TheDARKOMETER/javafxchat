@@ -24,10 +24,12 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javachat.controller.ChatMessageDataController;
 import javachat.controller.DataController;
 import javachat.dao.ChatMessageHandler;
 import javachat.models.ChatMessage;
 import javachat.models.User;
+import javachat.models.UsersOnline;
 import javachat.views.ChatMessageComponent;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -44,9 +46,10 @@ public class ChatStompSessionHandler implements StompSessionHandler {
     private static Logger logger = Logger.getLogger(ChatStompSessionHandler.class.getName());
     private ChatMessageHandler tcmd = ChatMessageHandler.getInstance();
     private UserAuthStore userAuthStore = UserAuthStore.getInstance();
-    private DataController dataController = new DataController(tcmd);
+    private ChatMessageDataController chatMessageDataController = new ChatMessageDataController(tcmd);
     private Node sharedComponent;
     private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
+    private DataController dataController = DataController.getInstance();
 
     public ChatStompSessionHandler(Node sharedComponent) {
         this.sharedComponent = sharedComponent;
@@ -58,7 +61,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
         String handshakeUUID = connectedHeaders.getFirst("user-name");
         userAuthStore.setSessionUUID(handshakeUUID);
         logger.info(">>> HS UUID: " + handshakeUUID);
-        
+
         /* Subscribing to /topic/messages will trigger an event to STOMP server to ensure that connection works and that STOMP server can
          receive and format data from client */
         session.subscribe("/topic/messages", this);
@@ -78,9 +81,29 @@ public class ChatStompSessionHandler implements StompSessionHandler {
             public void handleFrame(StompHeaders headers, Object payload) {
                 ChatMessage chatMessage = (ChatMessage) payload;
                 logger.info("Received chat message: " + chatMessage.getContent());
-                dataController.handleIncomingChatMessage(chatMessage, (VBox) sharedComponent);
+                chatMessageDataController.handleIncomingChatMessage(chatMessage, (VBox) sharedComponent);
 
                 // 
+            }
+        });
+
+        session.subscribe("/topic/online-users", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return UsersOnline.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                try {
+                    UsersOnline onlineUsers = (UsersOnline) payload;
+                    logger.info("Current user online count: " + onlineUsers.getOnlineCount());
+                    dataController.setOnlineUsersCount(onlineUsers.getOnlineCount());
+                    dataController.setOnlineUsernames(onlineUsers.getUserList());
+                    uiPublisher.notifySubscribers();
+                } catch (NumberFormatException e) {
+                    logger.log(Level.SEVERE, "Failed to parse online users " + e.getMessage());
+                }
             }
         });
 
@@ -98,7 +121,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
             public void handleFrame(StompHeaders headers, Object payload) {
                 ChatMessage welcomeMessage = (ChatMessage) payload;
                 logger.info("Received: " + welcomeMessage.getContent());
-                dataController.handleIncomingChatMessage(welcomeMessage, (VBox) sharedComponent);
+                chatMessageDataController.handleIncomingChatMessage(welcomeMessage, (VBox) sharedComponent);
             }
         });
 
@@ -119,7 +142,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
                 List<ChatMessage> chatMessageList = mapper.convertValue(payload, new TypeReference<List<ChatMessage>>() {
                 });
                 logger.info("Received chat message history of size: " + chatMessageList.size());
-                dataController.handleChatMessageHistory((ArrayList<ChatMessage>) chatMessageList, (VBox) sharedComponent);
+                chatMessageDataController.handleChatMessageHistory((ArrayList<ChatMessage>) chatMessageList, (VBox) sharedComponent);
             }
         });
 
@@ -138,7 +161,7 @@ public class ChatStompSessionHandler implements StompSessionHandler {
                     logger.info("Received guest user information WITH ID:  " + guestUser.getId());
                     uiPublisher.notifySubscribers();
                 }
-           });
+            });
         }
 
     }
@@ -166,7 +189,5 @@ public class ChatStompSessionHandler implements StompSessionHandler {
     public Type getPayloadType(StompHeaders headers) {
         return Message.class;
     }
-
-
 
 }

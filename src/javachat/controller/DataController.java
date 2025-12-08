@@ -5,16 +5,6 @@
 package javachat.controller;
 
 import java.util.ArrayList;
-import java.util.List;
-import javachat.models.ChatMessage;
-import javachat.dao.ChatMessageHandler;
-import javachat.services.UserAuthStore;
-import javachat.models.User;
-import javachat.views.ChatMessageComponent;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.VBox;
-import javafx.application.Platform;
-import javachat.dao.IChatMessageHandler;
 
 /**
  *
@@ -22,33 +12,33 @@ import javachat.dao.IChatMessageHandler;
  */
 public class DataController {
 
-    private IChatMessageHandler cmd;
-    private ArrayList<ChatMessageComponent> chatMessageComponents = new ArrayList<>();
-    
-    public DataController(IChatMessageHandler cmd) {
-        this.cmd = cmd;
+    private static DataController instance;
+    private int onlineUsersCount;
+    private ArrayList<String> onlineUsernames;
+
+    private DataController() {
     }
 
-    private void createChatMessageComponents(ArrayList<ChatMessage> cmsgs) {
-        for (ChatMessage cmsg : cmsgs) {
-            chatMessageComponents.add(new ChatMessageComponent(cmsg));
+    public static synchronized DataController getInstance() {
+        if (instance == null) {
+            instance = new DataController();
         }
+        return instance;
     }
 
-    public void handleIncomingChatMessage(ChatMessage cmsg, VBox chatStack) {
-        cmd.addChatMessage(cmsg);
-        ChatMessageComponent cmsgcmp = new ChatMessageComponent(cmsg);
-        Platform.runLater(() -> {
-            chatStack.getChildren().add(cmsgcmp);
-        });
+    public int getOnlineUsersCount() {
+        return onlineUsersCount;
     }
 
-    public void handleChatMessageHistory(ArrayList<ChatMessage> history, VBox chatStack) {
-        createChatMessageComponents(history);
-        Platform.runLater(() -> {
-            chatStack.getChildren().addAll(chatMessageComponents);
-        });
+    public void setOnlineUsersCount(int onlineUsersCount) {
+        this.onlineUsersCount = onlineUsersCount;
     }
 
+    public ArrayList<String> getOnlineUsernames() {
+        return onlineUsernames;
+    }
 
+    public void setOnlineUsernames(ArrayList<String> onlineUsernames) {
+        this.onlineUsernames = onlineUsernames;
+    }
 }
