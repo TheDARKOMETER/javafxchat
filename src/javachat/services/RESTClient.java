@@ -11,6 +11,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestTemplate;
 import javachat.models.User;
 import javachat.models.LoginResponse;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.client.CookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 /**
  *
@@ -18,19 +23,49 @@ import javachat.models.LoginResponse;
  */
 public class RESTClient {
 
-    RestTemplate rt = new RestTemplate();
-    String userResourceUrl = "http://localhost:8080/jsocketapi/user";
-    Logger logger = Logger.getLogger(RESTClient.class.getName());
-    
-    
-    public LoginResponse signUp(SignUpRequest signUpRequest) throws  Exception {
+    private RestTemplate rt = new RestTemplate();
+    private CookieStore cookieStore = new BasicCookieStore();
+    private static RESTClient instance;
+    private String userResourceUrl = "http://localhost:8080/jsocketapi/user";
+    private Logger logger = Logger.getLogger(RESTClient.class.getName());
+
+    private RESTClient() {
+        cookieStore = new BasicCookieStore();
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setDefaultCookieStore(cookieStore)
+                .build();
+        rt = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient)); // plain RestTemplate
+    }
+
+    public static RESTClient getInstance() {
+        if (instance == null) {
+            instance = new RESTClient();
+        }
+        return instance;
+    }
+
+    public String signUp(SignUpRequest signUpRequest) throws Exception {
         HttpEntity<SignUpRequest> request = new HttpEntity<SignUpRequest>(signUpRequest);
-        return rt.postForObject(userResourceUrl + "/signup", request, LoginResponse.class);
+        return rt.postForObject(userResourceUrl + "/signup", request, String.class);
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
         HttpEntity<LoginRequest> request = new HttpEntity<LoginRequest>(loginRequest);
         logger.info("Posting login request");
         return rt.postForObject(userResourceUrl + "/login", request, LoginResponse.class);
+    }
+
+    public CookieStore getCookieStore() {
+        return cookieStore;
+    }
+    
+    public void logout() {
+        cookieStore.clear();
+        try {
+            rt.postForObject(userResourceUrl + "/logout", null, String.class);
+        } catch(Exception ex) {
+            logger.warning("Server logout endpoint failed: " +  ex.getMessage());
+        }
+        logger.info("Logged out: cleared JSESSIONID from CookieStore");
     }
 }

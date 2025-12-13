@@ -43,7 +43,7 @@ public class Login extends JApplet {
     private static JFXPanel jfxPanel;
     private static final int JFXPANEL_WIDTH_INT = 380;
     private static final int JFXPANEL_HEIGHT_INT = 210;
-    private RESTClient restClient = new RESTClient();
+    private RESTClient restClient = RESTClient.getInstance();
     private UserAuthStore userService = UserAuthStore.getInstance();
     private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
     private JFrame frame;

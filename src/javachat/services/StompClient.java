@@ -44,6 +44,5 @@ public class StompClient {
         System.out.println("connected to " + brokerURL);
         
         return session.get();
-        //new Scanner(System.in).nextLine(); // Don't close immediately.
     }
 }

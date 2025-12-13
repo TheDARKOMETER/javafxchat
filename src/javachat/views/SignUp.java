@@ -22,7 +22,9 @@ import javafx.scene.layout.VBox;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import java.util.logging.Logger;
+import javachat.exceptions.ConfirmPasswordException;
 import javachat.interfaces.UserIdentifiable;
+import javachat.models.LoginRequest;
 import javachat.models.LoginResponse;
 import javachat.models.SignUpRequest;
 import javachat.models.User;
@@ -35,6 +37,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.PasswordField;
+import org.apache.http.cookie.Cookie;
 
 /**
  *
@@ -45,12 +48,17 @@ public class SignUp extends JApplet {
     private static JFXPanel jfxPanel;
     private static final int JFXPANEL_WIDTH_INT = 380;
     private static final int JFXPANEL_HEIGHT_INT = 230;
-    private RESTClient restClient = new RESTClient();
+    private RESTClient restClient = RESTClient.getInstance();
     private ChatFrame instance;
     private UserAuthStore userService = UserAuthStore.getInstance();
     private Logger signUpLogger = Logger.getLogger(SignUp.class.getName());
     private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
     private JFrame frame;
+    private PasswordField passwordInput;
+    private PasswordField confirmPasswordInput;
+    private TextField emailInput;
+    private TextField usernameInput;
+    private Button signUpBtn;
 
     @Override
     public void init() {
@@ -84,47 +92,55 @@ public class SignUp extends JApplet {
         loginForm.setPadding(new Insets(25, 25, 25, 25));
 
         Label usernameLabel = new Label("Username: ");
-        TextField usernameInput = new TextField();
+        usernameInput = new TextField();
         loginForm.add(usernameLabel, 0, 0);
         loginForm.add(usernameInput, 1, 0);
 
         Label emailLabel = new Label("Email: ");
-        TextField emailInput = new TextField();
+        emailInput = new TextField();
         loginForm.add(emailLabel, 0, 1);
         loginForm.add(emailInput, 1, 1);
 
         Label passwordLabel = new Label("Password: ");
-        PasswordField passwordInput = new PasswordField();
+        passwordInput = new PasswordField();
         loginForm.add(passwordLabel, 0, 2);
         loginForm.add(passwordInput, 1, 2);
 
         Label confirmPasswordLabel = new Label("Confirm Password: ");
-        PasswordField confirmPasswordInput = new PasswordField();
+        confirmPasswordInput = new PasswordField();
         loginForm.add(confirmPasswordLabel, 0, 3);
         loginForm.add(confirmPasswordInput, 1, 3);
 
-        Button signUpBtn = new Button("Sign Up");
+        signUpBtn = new Button("Sign Up");
         signUpBtn.setOnAction(e -> {
             signUpLogger.info("Attempting to sign up: " + usernameInput.getText() + " " + passwordInput.getText() + " " + emailInput.getText());
+
             try {
-
-                usernameInput.setDisable(true);
-                passwordInput.setDisable(true);
-                emailInput.setDisable(true);
-                confirmPasswordInput.setDisable(true);
-                signUpBtn.setDisable(true);
-
-                LoginResponse response = restClient.signUp(new SignUpRequest(usernameInput.getText(), passwordInput.getText(), emailInput.getText()));
-                signUpLogger.info("User posted: " + response.getUsername());
-                signUpLogger.log(Level.INFO, "User id: " + response.getId());
-                signUpLogger.log(Level.INFO, "User email: " + response.getEmail());
-
-                userService.login((UserIdentifiable) response);
-                uiPublisher.notifySubscribers();
-                if (response != null) {
+                if (!passwordInput.getText().equals(confirmPasswordInput.getText())) {
+                    throw new ConfirmPasswordException("Passwords must match");
+                }
+            } catch (ConfirmPasswordException ex) {
+                showError(ex.getMessage());
+                ex.printStackTrace();
+                setInputState(false);
+                return;
+            }
+            try {
+                setInputState(true);
+                String signUpResponse = restClient.signUp(new SignUpRequest(usernameInput.getText(), passwordInput.getText(), emailInput.getText()));
+                if (signUpResponse != null) {
+                    signUpLogger.info(">>> Signup Response: " + signUpResponse);
+                    LoginResponse loginResponse = restClient.login(new LoginRequest(usernameInput.getText(), passwordInput.getText()));
+                    userService.login((UserIdentifiable) loginResponse);
+                    uiPublisher.notifySubscribers();
                     ButtonType signUpButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
                     Dialog<String> successDialog = new Dialog<>();
                     successDialog.getDialogPane().setContentText("You have successfully signed up.");
+                    for (Cookie cookie : restClient.getCookieStore().getCookies()) {
+                        if ("JSESSIONID".equals(cookie.getName())) {
+                            signUpLogger.info(">>> JSESSIONID: " + cookie.getValue());
+                        }
+                    }
                     successDialog.getDialogPane().getButtonTypes().add(signUpButtonType);
                     successDialog.getDialogPane().lookupButton(signUpButtonType).setDisable(false);
                     successDialog.show();
@@ -137,17 +153,9 @@ public class SignUp extends JApplet {
                     });
                 }
             } catch (Exception ex) {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Something went wrong!");
-                signUpLogger.severe(ex.getMessage());
+                showError(ex.getMessage());
                 ex.printStackTrace();
-                alert.showAndWait();
-                usernameInput.setDisable(false);
-                passwordInput.setDisable(false);
-                emailInput.setDisable(false);
-                confirmPasswordInput.setDisable(false);
-                signUpBtn.setDisable(false);
+                setInputState(false);
             }
         });
 
@@ -157,5 +165,21 @@ public class SignUp extends JApplet {
         loginForm.add(centerHBox, 0, 4, 2, 1);
 
         jfxPanel.setScene(new Scene(loginForm));
+    }
+
+    private void setInputState(boolean state) {
+        usernameInput.setDisable(state);
+        passwordInput.setDisable(state);
+        emailInput.setDisable(state);
+        confirmPasswordInput.setDisable(state);
+        signUpBtn.setDisable(state);
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(message);
+        signUpLogger.severe(message);
+        alert.showAndWait();
     }
 }
