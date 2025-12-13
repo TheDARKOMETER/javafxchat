@@ -16,6 +16,7 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.apache.http.cookie.Cookie;
 
 /**
  *
@@ -59,8 +60,19 @@ public class RESTClient {
         return cookieStore;
     }
     
+    public Cookie getJSESSIONIDCookie() {
+        for (Cookie cookie : cookieStore.getCookies()) {
+            if ("JSESSIONID".equals(cookie.getName())) {
+                return cookie;
+            }
+        }
+        return null;
+    }
+    
     public void logout() {
         cookieStore.clear();
+        UserAuthStore userAuthStore = UserAuthStore.getInstance();
+        userAuthStore.logout();
         try {
             rt.postForObject(userResourceUrl + "/logout", null, String.class);
         } catch(Exception ex) {

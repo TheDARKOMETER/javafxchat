@@ -18,31 +18,56 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.ScrollPane;
+import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.web.socket.WebSocketHttpHeaders;
 
 /**
  *
  * @author User
  */
 public class StompClient {
+
     private String brokerURL;
     private UserAuthStore userAuthStore = UserAuthStore.getInstance();
     private String clientUUID = userAuthStore.getSessionUUID();
     private Logger logger = Logger.getLogger(StompClient.class.getName());
-    
-    public StompClient(String brokerURL) { 
+    private StompSession session;
+    private RESTClient restClient = RESTClient.getInstance();
+    private static StompClient instance;
+
+    private StompClient(String brokerURL) {
         this.brokerURL = brokerURL;
     }
-    
+
+    public static StompClient getInstance() {
+        if (instance == null) {
+            instance = new StompClient("ws://localhost:8080/jsocketapi/javafxchat");
+        }
+        return instance;
+    }
+
     public StompSession createClient(Node sharedComponent, ScrollPane chatScrollPane) throws InterruptedException, ExecutionException {
         WebSocketClient client = new StandardWebSocketClient();
         WebSocketStompClient stompClient = new WebSocketStompClient(client);
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         StompSessionHandler sessionHandler = new ChatStompSessionHandler(sharedComponent);
-        ListenableFuture<StompSession> session = stompClient.connect(brokerURL + "?isLoggedin=" + String.valueOf(userAuthStore.getIsLoggedIn()), sessionHandler);
-        System.out.println("connected to " + brokerURL);
-        
-        return session.get();
+        WebSocketHttpHeaders httpHeaders = new WebSocketHttpHeaders();
+        if (restClient.getJSESSIONIDCookie() != null) {
+            logger.info("Adding cookie JSESSIONID " + restClient.getJSESSIONIDCookie().getValue());
+            httpHeaders.add("Cookie", "JSESSIONID=" + restClient.getJSESSIONIDCookie().getValue());
+        }
+
+        ListenableFuture<StompSession> futureSession = stompClient.connect(brokerURL + "?isLoggedin=" + String.valueOf(userAuthStore.getIsLoggedIn()), httpHeaders, sessionHandler);
+        session = futureSession.get();
+        logger.info("connected to " + brokerURL);
+        return session;
+    }
+
+    public void disconnectClient() {
+        if (session != null && session.isConnected()) {
+            session.disconnect();
+        }
     }
 }

@@ -90,7 +90,7 @@ public class ChatFrame extends JApplet {
     private static Logger dataLogger = Logger.getLogger(ChatFrame.class.getName());
     private StompSession stompSession;
     private User user;
-    private static StompClient client = new StompClient("ws://localhost:8080/jsocketapi/javafxchat");
+    private static StompClient stompClient = StompClient.getInstance();
     private static JFXPanel fxContainer;
     private ChatFrame instance = this;
     private Text usernameTitle;
@@ -99,6 +99,7 @@ public class ChatFrame extends JApplet {
     private Text ulLabel;
     private VBox userListWrapper;
     private VBox userList;
+    private Runnable uiCallback = () -> updateUI();
 
     /**
      * @param args the command line arguments
@@ -142,7 +143,7 @@ public class ChatFrame extends JApplet {
 
     @Override
     public void init() {
-        uiPublisher.subscribe(() -> updateUI());
+        uiPublisher.subscribe(uiCallback);
         fxContainer = new JFXPanel();
         fxContainer.setPreferredSize(new Dimension(JFXPANEL_WIDTH_INT, JFXPANEL_HEIGHT_INT));
         add(fxContainer, BorderLayout.CENTER);
@@ -170,12 +171,12 @@ public class ChatFrame extends JApplet {
         signUpMenuItem.setOnAction(e -> {
             dataLogger.info("SignUp option clicked");
             SignUp signUp = new SignUp();
-            signUp.initSignUpPage();
+            signUp.initSignUpPage(this);
         });
         MenuItem loginMenuItem = new MenuItem("Login");
         loginMenuItem.setOnAction(e -> {
             Login login = new Login();
-            login.initLoginPage();
+            login.initLoginPage(this);
         });
 
         menuAuthentication.getItems().addAll(signUpMenuItem, loginMenuItem);
@@ -397,6 +398,7 @@ public class ChatFrame extends JApplet {
                     alert.show();
                     stompSession.send("/app/guest", null);
                     uiPublisher.notifySubscribers();
+                    restart();
                 });
                 menuAuthentication.getItems().clear();
                 menuAuthentication.getItems().add(logOutItem);
@@ -416,7 +418,7 @@ public class ChatFrame extends JApplet {
         StompSession session = null;
         System.out.println("Creating client");
         try {
-            session = client.createClient(sharedComponent, chatScrollPane);
+            session = stompClient.createClient(sharedComponent, chatScrollPane);
             uiPublisher.notifySubscribers();
         } catch (Exception e) {
             e.printStackTrace();
@@ -425,6 +427,11 @@ public class ChatFrame extends JApplet {
         return session;
     }
 
+    private void disconnectSession() {
+        stompClient.disconnectClient();
+    }
+    
+    
     private void setStompSession(StompSession ss) {
         this.stompSession = ss;
     }
@@ -436,4 +443,21 @@ public class ChatFrame extends JApplet {
         tt.play();
     }
 
+    
+    public void restart() {
+        uiPublisher.unsubscribe(uiCallback);
+        
+        if (fxContainer != null) {
+            remove(fxContainer);
+        }
+        
+        if (stompSession != null && stompSession.isConnected()) {
+            stompClient.disconnectClient();
+        }
+        
+        init();
+        
+        revalidate();
+        repaint();
+    }
 }

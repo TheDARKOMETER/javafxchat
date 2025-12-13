@@ -29,6 +29,7 @@ import javachat.models.LoginResponse;
 import javachat.models.SignUpRequest;
 import javachat.models.User;
 import javachat.services.RESTClient;
+import javachat.services.StompClient;
 import javachat.services.UIPublisher;
 import javachat.services.UserAuthStore;
 import javafx.scene.control.ButtonBar;
@@ -59,10 +60,13 @@ public class SignUp extends JApplet {
     private TextField emailInput;
     private TextField usernameInput;
     private Button signUpBtn;
+    private StompClient stompClient;
+    private ChatFrame chatFrameInstance;
 
     @Override
     public void init() {
         jfxPanel = new JFXPanel();
+        stompClient = StompClient.getInstance();
         jfxPanel.setPreferredSize(new Dimension(JFXPANEL_WIDTH_INT, JFXPANEL_HEIGHT_INT));
         add(jfxPanel, BorderLayout.CENTER);
         Platform.runLater(() -> {
@@ -71,7 +75,8 @@ public class SignUp extends JApplet {
     }
 
     // Called by Main Frame
-    public void initSignUpPage() {
+    public void initSignUpPage(ChatFrame instance) {
+        chatFrameInstance = instance;
         SignUp applet = this;
         applet.init();
         frame = new JFrame("Sign Up");
@@ -132,20 +137,16 @@ public class SignUp extends JApplet {
                     signUpLogger.info(">>> Signup Response: " + signUpResponse);
                     LoginResponse loginResponse = restClient.login(new LoginRequest(usernameInput.getText(), passwordInput.getText()));
                     userService.login((UserIdentifiable) loginResponse);
-                    uiPublisher.notifySubscribers();
                     ButtonType signUpButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
                     Dialog<String> successDialog = new Dialog<>();
                     successDialog.getDialogPane().setContentText("You have successfully signed up.");
-                    for (Cookie cookie : restClient.getCookieStore().getCookies()) {
-                        if ("JSESSIONID".equals(cookie.getName())) {
-                            signUpLogger.info(">>> JSESSIONID: " + cookie.getValue());
-                        }
-                    }
+                    signUpLogger.info(">>> JSESSIONID: " + restClient.getJSESSIONIDCookie());
                     successDialog.getDialogPane().getButtonTypes().add(signUpButtonType);
                     successDialog.getDialogPane().lookupButton(signUpButtonType).setDisable(false);
                     successDialog.show();
                     successDialog.setResultConverter(button -> {
                         if (button == signUpButtonType) {
+                            chatFrameInstance.restart();
                             successDialog.close();
                             frame.dispose();
                         }

@@ -48,7 +48,9 @@ public class Login extends JApplet {
     private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
     private JFrame frame;
     Logger loginLogger = Logger.getLogger(SignUp.class.getName());
+    private ChatFrame chatFrameInstance;
 
+    
     @Override
     public void init() {
         jfxPanel = new JFXPanel();
@@ -59,9 +61,10 @@ public class Login extends JApplet {
         });
     }
 
-    public void initLoginPage() {
+    public void initLoginPage(ChatFrame instance) {
         JApplet applet = this;
         applet.init();
+        chatFrameInstance = instance;
         frame = new JFrame("Login");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(applet.getContentPane());
@@ -110,6 +113,7 @@ public class Login extends JApplet {
                         if (button == loginButtonType) {
                             successDialog.close();
                             frame.dispose();
+                            chatFrameInstance.restart();
                         }
                         return null;
                     });

@@ -50,7 +50,8 @@ public class ChatStompSessionHandler implements StompSessionHandler {
     private Node sharedComponent;
     private UIPublisher uiPublisher = UIPublisher.getUIPublisherInstance();
     private DataController dataController = DataController.getInstance();
-
+    private RESTClient restClient = RESTClient.getInstance();
+    
     public ChatStompSessionHandler(Node sharedComponent) {
         this.sharedComponent = sharedComponent;
     }
