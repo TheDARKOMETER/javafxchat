@@ -58,6 +58,7 @@ import javachat.controller.DataController;
 import javachat.interfaces.UserIdentifiable;
 import org.springframework.messaging.simp.stomp.StompSession;
 import javachat.models.User;
+import javachat.services.RESTClient;
 import javachat.services.UIPublisher;
 import javachat.services.UserAuthStore;
 import javafx.geometry.Orientation;
@@ -84,6 +85,7 @@ public class ChatFrame extends JApplet {
     private UserAuthStore userService = UserAuthStore.getInstance();
     private DataController dataController = DataController.getInstance();
     private ChatMessageDataController chatMessageDataController = new ChatMessageDataController(tcmd);
+    private RESTClient restClient = RESTClient.getInstance();
     private VBox chatStack;
     private VBox slidingMenu;
     private ScrollPane chatScrollPane;
@@ -391,7 +393,7 @@ public class ChatFrame extends JApplet {
                 dataLogger.info("user is logged in");
                 MenuItem logOutItem = new MenuItem("Logout");
                 logOutItem.setOnAction(e -> {
-                    userService.logout();
+                    restClient.logout();
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Logged Out");
                     alert.setHeaderText("You are now logged out");
